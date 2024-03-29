@@ -1,6 +1,6 @@
 module Evie
-using GLMakie
-using GLMakie.FileIO
+using Makie
+using Makie.FileIO
 using PortAudio, SampledSignals, FFTW
 # Write your package code here.
 include("listen.jl")

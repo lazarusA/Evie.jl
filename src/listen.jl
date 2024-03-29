@@ -17,7 +17,7 @@ function listenToMe(seconds, buf_obs; N = 1024, fmin = 0Hz, fmax = 10000Hz, tran
             end
             @async while !done
                 read!(stream, buf)
-                buf_obs[] = 3 .+ Array(10*abs.(fft(buf)[fmin..fmax]))
+                buf_obs[] = 3 .+ Array(5*abs.(fft(buf)[fmin..fmax]))
             end
             sleep(seconds)
             done = true
