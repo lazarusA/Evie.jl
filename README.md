@@ -8,12 +8,20 @@ An offline AI assistant
 
 ```julia
 using Evie, GLMakie
-fs, _buf = initFsBuf()
+using DataStructures
+using Whisper
+using Llama2
+
+fs, _buf, buf = initFsBuf()
 buf_obs = Observable(_buf)
+c_buf = CircularBuffer{Float32}(1024*52) # ≈ 1.1s
+txt_query = Observable("[ Silence ]")
 
 with_theme(theme_dark()) do
-    plt_spectra = plotSpectrogram(buf_obs, fs)
+     # backgroundcolor=:ghostwhite
+    plt_spectra = plotSpectrogram(buf_obs, fs; marker=:circle,
+        colormap=:Hiroshige)
 end
 
-listenToMe(25, buf_obs)
+listenToMe(10, buf_obs, c_buf) # test with some music or your own voice
 ```

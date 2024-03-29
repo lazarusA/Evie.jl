@@ -4,10 +4,10 @@ function initFsBuf(N = 1024, fmin = 0Hz, fmax = 10000Hz)
     PortAudioStream(1, 0) do stream
         buf = read(stream, N)
         fs =  domain(fft(buf)[fmin..fmax])
-        return fs, Array(abs.(fft(buf)[fmin..fmax]))
+        return fs, Array(abs.(fft(buf)[fmin..fmax])), buf
     end
 end
-function listenToMe(seconds, buf_obs; N = 1024, fmin = 0Hz, fmax = 10000Hz, transcribe_text=false)
+function listenToMe(seconds, buf_obs, cb; N = 1024, fmin = 0Hz, fmax = 10000Hz, transcribe_text=false)
     PortAudioStream(1, 0) do stream
         done = false
         buf = read(stream, N)
@@ -18,6 +18,7 @@ function listenToMe(seconds, buf_obs; N = 1024, fmin = 0Hz, fmax = 10000Hz, tran
             @async while !done
                 read!(stream, buf)
                 buf_obs[] = 3 .+ Array(5*abs.(fft(buf)[fmin..fmax]))
+                append!(cb, Array(buf)[1:end])
             end
             sleep(seconds)
             done = true
