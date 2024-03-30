@@ -1,9 +1,8 @@
-export liveTranscribe!
+export liveTranscribe
 export resampleStream
-function liveTranscribe!(buf_att, model_att, txt_att::Observable)
+function liveTranscribe(buf_att, model_att)
     audio_data = resampleStream(buf_att)
-    txt_query = transcribe(model_att, audio_data)
-    txt_att[] = txt_query
+    return transcribe(model_att, audio_data)
 end
 
 function resampleStream(stream_sample)
@@ -12,9 +11,12 @@ function resampleStream(stream_sample)
     return sout.data
 end
 
-function transcribe_async!(stream, model_att, done)
+function transcribe_async!(c_buf, model_att, done)
     @async while !done
-        buf_att=read(stream, 1.25s)
-        live_transcribe!(buf_att, model_att, txt_att)
+        if isfull(c_buf)
+            c_buf_sampled = SampleBuf(Array(c_buf), 48000)
+            liveTranscribe!(c_buf_sampled, model_att)
+            empty!(c_buf) # reset the buffer
+        end
     end
 end

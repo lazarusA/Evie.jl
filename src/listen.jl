@@ -7,18 +7,28 @@ function initFsBuf(N = 1024, fmin = 0Hz, fmax = 10000Hz)
         return fs, Array(abs.(fft(buf)[fmin..fmax])), buf
     end
 end
-function listenToMe(seconds, buf_obs, cb; N = 1024, fmin = 0Hz, fmax = 10000Hz, transcribe_text=false)
+function listenToMe(seconds, buf_obs, txt_obs, circ_buf, model_att;
+    N = 1024, fmin = 0Hz, fmax = 10000Hz, transcribe_text=false)
+
     PortAudioStream(1, 0) do stream
         done = false
         buf = read(stream, N)
         @sync begin
-            if transcribe_text
-                transcribe_async!(stream, model_att, done)
+            @async while !done
+                if transcribe_text
+                    @show "here"
+                    if isfull(circ_buf)
+                        txt_out = liveTranscribe(circ_buf, model_att)
+                        txt_obs[] = txt_out
+                        @show "also here"
+                        empty!(circ_buf)
+                    end
+                end
             end
             @async while !done
                 read!(stream, buf)
                 buf_obs[] = 3 .+ Array(5*abs.(fft(buf)[fmin..fmax]))
-                append!(cb, Array(buf)[1:end])
+                append!(circ_buf, Array(buf)[1:end])
             end
             sleep(seconds)
             done = true

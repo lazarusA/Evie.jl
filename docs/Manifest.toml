@@ -2,7 +2,7 @@
 
 julia_version = "1.10.2"
 manifest_format = "2.0"
-project_hash = "411132e63fe07d80fff86a6845c0d7843b6f791d"
+project_hash = "1091f1b7768bd323adbdda1300529a67b75a03f0"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -377,7 +377,7 @@ uuid = "4e289a0a-7415-4d19-859d-a7e5c4648b56"
 version = "1.0.4"
 
 [[deps.Evie]]
-deps = ["DataStructures", "FFTW", "GLFW", "Makie", "PortAudio", "SampledSignals", "Whisper"]
+deps = ["DataStructures", "FFTW", "GLFW", "Llama2", "Makie", "PortAudio", "SampledSignals", "Whisper"]
 path = ".."
 uuid = "65e27c1f-f1a9-41cd-8b63-580120f62de1"
 version = "1.0.0-DEV"

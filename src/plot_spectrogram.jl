@@ -1,6 +1,6 @@
 export circleShape
 export plotSpectrogram
-function plotSpectrogram(buf_obs, fs; colormap=:Bay, marker=:rect)
+function plotSpectrogram(buf_obs, fs, txt_query; colormap=:Bay, marker=:rect)
     x, y, rot_theta = circleShape(length(fs); r=0.8)
     n_cut = length(x)÷2
     
@@ -13,7 +13,8 @@ function plotSpectrogram(buf_obs, fs; colormap=:Bay, marker=:rect)
     ax_txt_output = Axis(fig[1,1]; width=250, height=50,
         tellwidth=false, tellheight=false,
         halign=0.5, valign=0.0, backgroundcolor=(:snow1, 0.05))
-
+    text!(ax_txt_input, txt_query, align=(:center, :center))
+    
     scatter!(ax, x, y; color = buf_obs,
         colorrange=(1,100), marker, colormap,
         rotations=rot_theta[end:-1:1] .+ pi/2,

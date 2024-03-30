@@ -7,25 +7,28 @@ using GLMakie.FileIO
 
 fs, _buf, buf = initFsBuf()
 buf_obs = Observable(_buf)
-c_buf = CircularBuffer{Float32}(1024*52) # ≈ 1.1s
-txt_query = Observable("[ Silence ]")
+circ_buf = CircularBuffer{Float32}(1024*52) # ≈ 1.109s
+txt_obs = Observable("[ Silence ]")
 
-with_theme(theme_dark()) do
+with_theme(theme_black()) do
      # backgroundcolor=:ghostwhite
-    plt_spectra = plotSpectrogram(buf_obs, fs; marker=:circle,
+    plt_spectra = plotSpectrogram(buf_obs, fs, txt_obs; marker=:circle,
         colormap=:Hiroshige)
 end
 
-listenToMe(1.2, buf_obs, c_buf) # Q. What is love?
-c_buf_sampled = SampleBuf(Array(c_buf), 48000)
-
 model_att = joinpath(@__DIR__, "models/ggml-base.en.bin")
 
-if isfull(c_buf)
-    liveTranscribe!(c_buf_sampled, model_att, txt_query)
-end
+listenToMe(1.2, buf_obs, txt_obs, circ_buf, model_att;
+    transcribe_text=true) # Q. What is love?
 
-txt_query[]
+
+if isfull(circ_buf)
+    c_buf_sampled = SampleBuf(Array(circ_buf), 48000)
+    liveTranscribe(c_buf_sampled, model_att)
+end
+txt_out = liveTranscribe(c_buf_sampled, model_att)
+
+txt_obs[] = txt_out
 
 # connect to Llama2
 llama_model = joinpath(@__DIR__, "models/llama-2-7b-chat.Q4_K_S.gguf")
