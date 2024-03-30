@@ -16,11 +16,10 @@ function listenToMe(seconds, buf_obs, txt_obs, circ_buf, model_att;
         @sync begin
             @async while !done
                 if transcribe_text
-                    @show "here"
+                    @show "here" # this triggers the update
                     if isfull(circ_buf)
-                        txt_out = liveTranscribe(circ_buf, model_att)
-                        txt_obs[] = txt_out
-                        @show "also here"
+                        txt_obs[] = liveTranscribe(circ_buf, model_att)
+                        @show "new transcript" # also this one
                         empty!(circ_buf)
                     end
                 end

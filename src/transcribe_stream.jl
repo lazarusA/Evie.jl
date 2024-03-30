@@ -1,7 +1,8 @@
 export liveTranscribe
 export resampleStream
-function liveTranscribe(buf_att, model_att)
-    audio_data = resampleStream(buf_att)
+function liveTranscribe(circ_buf, model_att)
+    c_buf_sampled = SampleBuf(Array(circ_buf), 48000)
+    audio_data = resampleStream(c_buf_sampled)
     return transcribe(model_att, audio_data)
 end
 
