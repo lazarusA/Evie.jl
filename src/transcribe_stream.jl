@@ -1,4 +1,4 @@
-export live_transcribe!
+export liveTranscribe!
 export resampleStream
 function liveTranscribe!(buf_att, model_att, txt_att::Observable)
     audio_data = resampleStream(buf_att)

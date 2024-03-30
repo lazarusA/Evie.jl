@@ -2,6 +2,8 @@ using Evie, GLMakie
 using DataStructures
 using Whisper
 using Llama2
+using SampledSignals
+using GLMakie.FileIO
 
 fs, _buf, buf = initFsBuf()
 buf_obs = Observable(_buf)
@@ -14,14 +16,13 @@ with_theme(theme_dark()) do
         colormap=:Hiroshige)
 end
 
-listenToMe(1.1, buf_obs, c_buf)
+listenToMe(1.2, buf_obs, c_buf) # Q. What is love?
+c_buf_sampled = SampleBuf(Array(c_buf), 48000)
 
 model_att = joinpath(@__DIR__, "models/ggml-base.en.bin")
-resampleStream(Array(c_buf))
 
-# TODO, fix input types
 if isfull(c_buf)
-    transcribe(Array(c_buf), model_att, txt_query)
+    liveTranscribe!(c_buf_sampled, model_att, txt_query)
 end
 
 txt_query[]
