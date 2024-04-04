@@ -14,7 +14,7 @@ An offline AI assistant
 > For the AI LLM: Download: https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/blob/main/llama-2-7b-chat.Q4_K_S.gguf
 
 ## Package dependencies:
-For now, add this ones
+For now, add these ones
 
 ```sh
 julia > add https://github.com/lazarusA/Whisper.jl.git#main
