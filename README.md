@@ -4,7 +4,7 @@
 
 An offline AI assistant
 
-## Donwload models
+## Download models
 
 > [!IMPORTANT]
 > Transcribe with Whisper.jl
@@ -14,14 +14,14 @@ An offline AI assistant
 > For the AI LLM: Download: https://huggingface.co/TheBloke/Llama-2-7b-Chat-GGUF/blob/main/llama-2-7b-chat.Q4_K_S.gguf
 
 ## Package dependencies:
-For now, add these ones
 
+For Julia 1.9-1.10, you will need to explicitly add these ones
+
+```sh
+julia > add https://github.com/lazarusA/Llama2.jl.git#to_use
+```
 ```sh
 julia > add https://github.com/lazarusA/Whisper.jl.git#main
-```
-
-```sh
-julia > add https://github.com/lazarusA/Llama2.jl.git#master
 ```
 
 in addition to the ones in the Project.toml files.
