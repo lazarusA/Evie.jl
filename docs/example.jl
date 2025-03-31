@@ -8,7 +8,7 @@ buf_obs = Observable(_buf)
 circ_buf = CircularBuffer{Float32}(1024*52) # ≈ 1.109s
 txt_obs = Observable("[ Silence ]")
 
-with_theme(theme_black()) do
+with_theme(theme_dark()) do
     plt_spectra = plotSpectrogram(buf_obs, fs, txt_obs;
         marker=:circle, colormap=:Hiroshige)
 end

@@ -17,7 +17,7 @@ function plotSpectrogram(buf_obs, fs, txt_query; colormap=:Bay, marker=:rect)
     
     scatter!(ax, x, y; color = buf_obs,
         colorrange=(1,100), marker, colormap,
-        rotations=rot_theta[end:-1:1] .+ pi/2,
+        rotation=rot_theta[end:-1:1] .+ pi/2,
         markersize = @lift(Vec2f.($buf_obs, 6))
         )
     lines!(ax, -0.5..0.5, @lift([$buf_obs[n_cut:-1:1]..., $buf_obs[1:n_cut]...]/(2*length(x)));
