@@ -1,7 +1,7 @@
 name = "Evie"
 uuid = "65e27c1f-f1a9-41cd-8b63-580120f62de1"
 authors = ["Lazaro Alonso"]
-version = "1.0.0-DEV"
+version = "0.1.0"
 
 [deps]
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
@@ -13,7 +13,13 @@ PortAudio = "80ea8bcb-4634-5cb3-8ee8-a132660d1d2d"
 SampledSignals = "bd7594eb-a658-542f-9e75-4c4d8908c167"
 Whisper = "1846abd0-4e01-46c4-9113-916b63b070ed"
 
+[sources]
+Llama2 = {rev = "to_use", url = "https://github.com/lazarusA/Llama2.jl"}
+Whisper = {rev = "main", url = "https://github.com/lazarusA/Whisper.jl.git"}
+
 [compat]
+Llama2 = "0.1.0"
+Whisper = "0.1.0"
 julia = "1"
 
 [extras]
