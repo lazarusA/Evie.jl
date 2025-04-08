@@ -15,16 +15,16 @@ function listenToMe(seconds, buf_obs, txt_obs, circ_buf, model_att;
         buf = read(stream, N)
         @sync begin
             @async while !done
+                yield()
                 if transcribe_text
-                    @show "here" # this triggers the update
                     if isfull(circ_buf)
                         txt_obs[] = liveTranscribe(circ_buf, model_att)
-                        @show "new transcript" # also this one
                         empty!(circ_buf)
                     end
                 end
             end
             @async while !done
+                yield()
                 read!(stream, buf)
                 buf_obs[] = 3 .+ Array(5*abs.(fft(buf)[fmin..fmax]))
                 append!(circ_buf, Array(buf)[1:end])
@@ -33,6 +33,7 @@ function listenToMe(seconds, buf_obs, txt_obs, circ_buf, model_att;
             done = true
         end
     end
+    return nothing
 end
 
 function pitchHalver(x) # decrease pitch by one octave via FFT

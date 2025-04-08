@@ -15,7 +15,7 @@ end
 
 model_att = joinpath(@__DIR__, "models/ggml-base.en.bin")
 
-listenToMe(1.2, buf_obs, txt_obs, circ_buf, model_att;
+listenToMe(15, buf_obs, txt_obs, circ_buf, model_att;
     transcribe_text=true) # Q. What is love?
 
 # connect to Llama2
