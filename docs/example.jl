@@ -1,22 +1,23 @@
-using Evie, GLMakie
-using DataStructures
-using SampledSignals
-using GLMakie.FileIO
+using Evie
+using GLMakie
+using DataStructures: CircularBuffer
 
-fs, _buf, buf = initFsBuf()
-buf_obs = Observable(_buf)
-circ_buf = CircularBuffer{Float32}(1024*52) # ≈ 1.109s
-txt_obs = Observable("[ Silence ]")
+# start Evie
+fs, _buf, _ = initFsBuf()  # initialize the audio stream
+audio_obs = Observable(_buf)
+audio_buf = CircularBuffer{Float32}(1024*52) # ≈ 1.109s, circular buffer for the audio
+speech_obs = Observable("[ Silence ]") # text input
+btn_label = Observable("⬤") # button label
+plotSpectrogram(audio_obs, fs, speech_obs, btn_label)
+# start listening to the microphone
+t_seconds = 20 # seconds
+btn_label[] = "⫷"
+model_att=joinpath(@__DIR__, "models/gguf/whisper-1b-english.Q4_K_S.gguf")
 
-with_theme(theme_dark()) do
-    plt_spectra = plotSpectrogram(buf_obs, fs, txt_obs;
-        marker=:circle, colormap=:Hiroshige)
-end
+# start 
+listenEvie(audio_obs, speech_obs, audio_buf, t_seconds, model_att;
+    transcribe_text=true)
 
-model_att = joinpath(@__DIR__, "models/ggml-base.en.bin")
-
-listenToMe(15, buf_obs, txt_obs, circ_buf, model_att;
-    transcribe_text=true) # Q. What is love?
 
 # connect to Llama2
 using Llama2
@@ -28,4 +29,13 @@ sample(model_llama, "how to sum two numbers in Julia?"; temperature=0.7f0) # txt
 output_prompt=[]
 sampleObs(model_llama, "What is love?", output_prompt; temperature=0.7f0) # txt_obs[]
 
-
+# on(button.clicks) do _
+#     if playing[]
+#         button.label[] = "⬤"
+#         playing[] = false
+#     else
+#         button.label[] = "⫷"
+#         playing[] = true
+#         listenEvie(t_seconds, buf_obs, txt_query, circ_buf, model_att)
+#     end
+# end

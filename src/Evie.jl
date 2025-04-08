@@ -1,5 +1,6 @@
 module Evie
 using Makie
+using Suppressor
 using Makie.FileIO
 using PortAudio, SampledSignals, FFTW
 using DataStructures: CircularBuffer, isfull, empty!

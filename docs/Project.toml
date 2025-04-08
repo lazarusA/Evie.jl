@@ -5,9 +5,10 @@ GLMakie = "e9467ef8-e4e7-5192-8a1a-b1aee30e663a"
 Llama2 = "7841fa2c-192d-471c-ae30-1f93a4daddfc"
 Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 SampledSignals = "bd7594eb-a658-542f-9e75-4c4d8908c167"
+Suppressor = "fd094767-a336-5f1f-9728-57cf17d0bbfb"
 Whisper = "1846abd0-4e01-46c4-9113-916b63b070ed"
 
 [sources]
+Evie = {path = ".."}
 Llama2 = {rev = "to_use", url = "https://github.com/lazarusA/Llama2.jl"}
 Whisper = {rev = "main", url = "https://github.com/lazarusA/Whisper.jl.git"}
-Evie = { path = ".."}

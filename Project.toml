@@ -11,6 +11,7 @@ Llama2 = "7841fa2c-192d-471c-ae30-1f93a4daddfc"
 Makie = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
 PortAudio = "80ea8bcb-4634-5cb3-8ee8-a132660d1d2d"
 SampledSignals = "bd7594eb-a658-542f-9e75-4c4d8908c167"
+Suppressor = "fd094767-a336-5f1f-9728-57cf17d0bbfb"
 Whisper = "1846abd0-4e01-46c4-9113-916b63b070ed"
 
 [sources]
@@ -19,6 +20,7 @@ Whisper = {rev = "main", url = "https://github.com/lazarusA/Whisper.jl.git"}
 
 [compat]
 Llama2 = "0.1.0"
+Suppressor = "0.2.8"
 Whisper = "0.1.0"
 julia = "1"
 

@@ -1,14 +1,17 @@
 export initFsBuf
-export listenToMe
+export listenEvie
 function initFsBuf(N = 1024, fmin = 0Hz, fmax = 10000Hz)
     PortAudioStream(1, 0) do stream
         buf = read(stream, N)
-        fs =  domain(fft(buf)[fmin..fmax])
-        return fs, Array(abs.(fft(buf)[fmin..fmax])), buf
+        fs =  domain(fft(buf)[fmin .. fmax])
+        return fs, Array(abs.(fft(buf)[fmin .. fmax])), buf
     end
 end
-function listenToMe(seconds, buf_obs, txt_obs, circ_buf, model_att;
+
+# audio_obs, speech_obs, audio_buf, t_seconds, btn_label, model_att
+function listenEvie(buf_obs, txt_obs, circ_buf, t_seconds, model_att;
     N = 1024, fmin = 0Hz, fmax = 10000Hz, transcribe_text=false)
+    ctx, wparams = loadWhisperModel(model_att)
 
     PortAudioStream(1, 0) do stream
         done = false
@@ -18,7 +21,7 @@ function listenToMe(seconds, buf_obs, txt_obs, circ_buf, model_att;
                 yield()
                 if transcribe_text
                     if isfull(circ_buf)
-                        txt_obs[] = liveTranscribe(circ_buf, model_att)
+                        txt_obs[] = liveTranscribe(circ_buf, ctx, wparams)
                         empty!(circ_buf)
                     end
                 end
@@ -26,10 +29,12 @@ function listenToMe(seconds, buf_obs, txt_obs, circ_buf, model_att;
             @async while !done
                 yield()
                 read!(stream, buf)
-                buf_obs[] = 3 .+ Array(5*abs.(fft(buf)[fmin..fmax]))
+                buf_obs[] = 3 .+ Array(5*abs.(fft(buf)[fmin .. fmax]))
                 append!(circ_buf, Array(buf)[1:end])
             end
-            sleep(seconds)
+            sleep(t_seconds)
+            Whisper.whisper_free(ctx)
+            GC.gc()
             done = true
         end
     end
