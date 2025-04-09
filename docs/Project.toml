@@ -11,4 +11,4 @@ Whisper = "1846abd0-4e01-46c4-9113-916b63b070ed"
 [sources]
 Evie = {path = ".."}
 Llama2 = {rev = "to_use", url = "https://github.com/lazarusA/Llama2.jl"}
-Whisper = {rev = "main", url = "https://github.com/lazarusA/Whisper.jl.git"}
+Whisper = {rev = "la/shh_shh", url = "https://github.com/lazarusA/Whisper.jl.git"}

@@ -12,7 +12,7 @@ plotSpectrogram(audio_obs, fs, speech_obs, btn_label)
 # start listening to the microphone
 t_seconds = 20 # seconds
 btn_label[] = "⫷"
-model_att=joinpath(@__DIR__, "models/gguf/whisper-1b-english.Q4_K_S.gguf")
+model_att=joinpath(@__DIR__, "models/ggml-base.en.bin")
 
 # start 
 listenEvie(audio_obs, speech_obs, audio_buf, t_seconds, model_att;
