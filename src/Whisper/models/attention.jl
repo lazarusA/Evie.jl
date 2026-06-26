@@ -8,7 +8,7 @@ struct MultiHeadSelfAttention{Q, K, V, O} <: Lux.AbstractLuxLayer
     key::K
     value::V
     out::O
-    n_heads::Integer
+    n_heads::Int
 end
 
 function MultiHeadSelfAttention(d_model, n_heads)
@@ -28,9 +28,9 @@ function (m::MultiHeadSelfAttention)(x, ps, st; context = nothing, mask = nothin
     k, st_k = m.key(src, ps.key, st.key)
     v, st_v = m.value(src, ps.value, st.value)
 
-    y = dot_product_attention(q, k, v; mask, nheads = m.n_heads)
+    y, _ = dot_product_attention(q, k, v; mask, nheads = m.n_heads)
 
-    out, st_out = m.output(y, ps.output, st.output)
+    out, st_out = m.out(y, ps.out, st.out)
 
     return out, (query = st_q, key = st_k, value = st_v, output = st_out)
 end
