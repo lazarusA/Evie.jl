@@ -47,37 +47,19 @@ function (t::BPETokenizer)(text::String)
     return ids
 end
 
-# Decode a single token id back to string
 function decode(t::BPETokenizer, id::Int)
-    # Check special tokens first
-    for (k, v) in t.vocab.special_tokens
-        v == id && return k
-    end
-    # Otherwise reverse lookup in mergeable ranks
-    for (bytes, rank) in t.vocab.mergeable
-        rank == id && return String(bytes)
-    end
-    error("Unknown token id: $id")
+    v = get(t.vocab.decoder, id, nothing)
+    return isnothing(v) ? t.vocab.special_decoder[id] : String(v)
 end
 
-# Decode a sequence of token ids
 function decode(t::BPETokenizer, ids::AbstractVector{Int}; include_specials::Bool = true)
     bytes = UInt8[]
     for id in ids
-        found_special = false
-        for (k, v) in t.vocab.special_tokens
-            if v == id
-                found_special = true
-                include_specials && append!(bytes, codeunits(k))
-                break
-            end
-        end
-        found_special && continue
-        for (b, rank) in t.vocab.mergeable
-            if rank == id
-                append!(bytes, b)
-                break
-            end
+        v = get(t.vocab.decoder, id, nothing)
+        if isnothing(v)
+            include_specials && append!(bytes, codeunits(t.vocab.special_decoder[id]))
+        else
+            append!(bytes, v)
         end
     end
     return String(bytes)
