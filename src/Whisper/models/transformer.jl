@@ -69,15 +69,15 @@ function (m::TransformerBlock)(x, ps, st; context = nothing, mask = nothing)
 end
 
 function SequentialWithContext(layers::Vector)
-    names  = Tuple(Symbol(:layer, i) for i in eachindex(layers))
+    names = Tuple(Symbol(:layer, i) for i in eachindex(layers))
     return SequentialWithContext(NamedTuple{names}(layers))
 end
 
-function (m::SequentialWithContext)(x, ps, st; context=nothing, mask=nothing)
+function (m::SequentialWithContext)(x, ps, st; context = nothing, mask = nothing)
     st_new = st
     for name in keys(m.layers)
-        x, st_i  = m.layers[name](x, ps[name], st[name]; context, mask)
-        st_new   = merge(st_new, (; name => st_i))
+        x, st_i = m.layers[name](x, ps[name], st[name]; context, mask)
+        st_new = merge(st_new, (; name => st_i))
     end
     return x, st_new
 end
