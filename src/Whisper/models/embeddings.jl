@@ -13,14 +13,22 @@ function PositionEmbedding(n_positions, d_model)
 end
 
 function (m::PositionEmbedding)(x, ps, st)
-    pos = reshape(1:size(x, 2), :)
-    emb, st = m.embedding(pos, ps.embedding, st.embedding)
-
-    return x .+ emb, st
+    pos = 1:size(x, 1)
+    emb, st_emb = m.embedding(pos, ps.embedding, st.embedding)
+    return x .+ emb, (embedding = st_emb,)
 end
 
 struct TokenEmbedding{E} <: Lux.AbstractLuxLayer
     embedding::E
+end
+
+function TokenEmbedding(n_vocab, d_model)
+    return TokenEmbedding(Embedding(n_vocab => d_model))
+end
+
+function (m::TokenEmbedding)(x, ps, st)
+    emb, st_emb = m.embedding(x, ps.embedding, st.embedding)
+    return emb, (embedding = st_emb,)
 end
 
 end

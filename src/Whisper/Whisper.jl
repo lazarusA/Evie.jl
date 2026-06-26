@@ -20,7 +20,6 @@ include("./models/encoder.jl")
 include("./models/decoder.jl")
 include("./models/embeddings.jl")
 include("./models/masks.jl")
-include("./models/kernels.jl")
 
 export WhisperModel
 
