@@ -13,7 +13,6 @@ function encode_bpe(ranks, bytes)
         for i in 1:(length(parts) - 1)
             pair = [parts[i]..., parts[i + 1]...]
             r = get(ranks, pair, nothing)
-
             if r !== nothing && r < best_rank
                 best = i
                 best_rank = r
@@ -22,11 +21,9 @@ function encode_bpe(ranks, bytes)
 
         best === nothing && break
 
-        parts = vcat(
-            parts[1:(best - 1)],
-            [[parts[best]..., parts[best + 1]...]],
-            parts[(best + 2):end]
-        )
+        merged = [parts[best]..., parts[best + 1]...]
+        deleteat!(parts, best + 1)
+        parts[best] = merged
     end
 
     return [ranks[p] for p in parts]
