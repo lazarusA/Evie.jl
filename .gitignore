@@ -5,3 +5,5 @@ docs/models
 dev
 .qodo
 docs/Manifest.toml
+Manifest.toml
+*.bin
