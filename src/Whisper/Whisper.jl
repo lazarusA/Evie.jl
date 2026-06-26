@@ -16,11 +16,29 @@ end
 
 include("./models/attention.jl")
 include("./models/transformer.jl")
-include("./models/encoder.jl")
-include("./models/decoder.jl")
 include("./models/embeddings.jl")
 include("./models/masks.jl")
-include("./models/kernels.jl")
+include("./models/encoder.jl")
+include("./models/decoder.jl")
+
+function WhisperModel(;
+        n_mels, d_model, n_layers_enc, n_heads_enc, max_positions_enc,
+        n_vocab, n_layers_dec, n_heads_dec, max_positions_dec
+    )
+    encoder = WhisperEncoder(;
+        n_mels, d_model,
+        n_layers = n_layers_enc,
+        n_heads = n_heads_enc,
+        max_positions = max_positions_enc
+    )
+    decoder = WhisperDecoder(;
+        n_vocab, d_model,
+        n_layers = n_layers_dec,
+        n_heads = n_heads_dec,
+        max_positions = max_positions_dec
+    )
+    return WhisperModel(encoder, decoder)
+end
 
 export WhisperModel
 

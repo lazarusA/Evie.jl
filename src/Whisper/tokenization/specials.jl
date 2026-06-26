@@ -1,4 +1,4 @@
-const LANGUAGES = Dict(
+const LANGUAGES = OrderedDict(
     "en" => "english",
     "de" => "german",
     "fr" => "french",

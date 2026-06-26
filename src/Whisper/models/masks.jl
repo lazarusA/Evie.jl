@@ -2,6 +2,7 @@ module Masks
 
 export causal_mask
 
-causal_mask(n::Int) = triu(ones(Bool, n, n), 1)
+# true = keep, false = block — consistent with NNlib.dot_product_attention
+causal_mask(n::Int) = tril(ones(Bool, n, n))
 
 end

@@ -3,7 +3,7 @@ using Makie
 using Suppressor
 using Makie.FileIO
 using PortAudio, SampledSignals, FFTW
-using DataStructures: CircularBuffer, isfull, empty!
+using DataStructures: CircularBuffer, isfull, empty!, OrderedDict
 # using Whisper # https://github.com/lazarusA/Whisper.jl.git
 
 include("Whisper/Whisper.jl")
