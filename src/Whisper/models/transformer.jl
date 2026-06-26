@@ -3,6 +3,8 @@ module Transformer
 using Lux
 using ..Attention
 
+export TransformerBlock, SequentialWithContext
+
 struct TransformerBlock{A, N, CA, CN, F, LN} <: Lux.AbstractLuxLayer
     attention::A
     norm1::N
@@ -10,6 +12,10 @@ struct TransformerBlock{A, N, CA, CN, F, LN} <: Lux.AbstractLuxLayer
     norm_cross::CN
     feedforward::F
     norm2::LN
+end
+
+struct SequentialWithContext{L} <: Lux.AbstractLuxLayer
+    layers::L
 end
 
 function TransformerBlock(d_model, n_heads; cross_attention = false)
@@ -60,6 +66,20 @@ function (m::TransformerBlock)(x, ps, st; context = nothing, mask = nothing)
             feedforward = st_ff,
             norm2 = st_n2,
         )
+end
+
+function SequentialWithContext(layers::Vector)
+    names  = Tuple(Symbol(:layer, i) for i in eachindex(layers))
+    return SequentialWithContext(NamedTuple{names}(layers))
+end
+
+function (m::SequentialWithContext)(x, ps, st; context=nothing, mask=nothing)
+    st_new = st
+    for name in keys(m.layers)
+        x, st_i  = m.layers[name](x, ps[name], st[name]; context, mask)
+        st_new   = merge(st_new, (; name => st_i))
+    end
+    return x, st_new
 end
 
 end

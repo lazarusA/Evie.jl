@@ -21,6 +21,7 @@ Llama2 = {rev = "to_use", url = "https://github.com/lazarusA/Llama2.jl"}
 Whisper = {rev = "la/shh_shh", url = "https://github.com/lazarusA/Whisper.jl.git"}
 
 [compat]
+DataStructures = "0.19.5"
 Llama2 = "0.1.0"
 Lux = "1.31.4"
 NNlib = "0.9.37"

@@ -16,10 +16,10 @@ end
 
 include("./models/attention.jl")
 include("./models/transformer.jl")
-include("./models/encoder.jl")
-include("./models/decoder.jl")
 include("./models/embeddings.jl")
 include("./models/masks.jl")
+include("./models/encoder.jl")
+include("./models/decoder.jl")
 
 export WhisperModel
 
