@@ -1,34 +1,68 @@
 module Embeddings
 
 using Lux
+using Random
 
-export PositionEmbedding, TokenEmbedding
-
-struct PositionEmbedding{E} <: Lux.AbstractLuxLayer
-    embedding::E
-end
-
-function PositionEmbedding(n_positions, d_model)
-    return PositionEmbedding(Embedding(n_positions => d_model))
-end
-
-function (m::PositionEmbedding)(x, ps, st)
-    pos = 1:size(x, 1)
-    emb, st_emb = m.embedding(pos, ps.embedding, st.embedding)
-    return x .+ emb, (embedding = st_emb,)
-end
+export TokenEmbedding, PositionEmbedding
 
 struct TokenEmbedding{E} <: Lux.AbstractLuxLayer
     embedding::E
+    function TokenEmbedding{E}(embedding::E) where {E}
+        return new{E}(embedding)
+    end
 end
 
-function TokenEmbedding(n_vocab, d_model)
-    return TokenEmbedding(Embedding(n_vocab => d_model))
+function TokenEmbedding(n_vocab::Integer, d_model::Integer)
+    emb = Lux.Embedding(n_vocab => d_model)
+    return TokenEmbedding{typeof(emb)}(emb)  # ← must have {typeof(emb)}
+end
+function Lux.initialparameters(rng::AbstractRNG, m::TokenEmbedding)
+    return (embedding = Lux.initialparameters(rng, m.embedding),)
+end
+
+function Lux.initialstates(rng::AbstractRNG, m::TokenEmbedding)
+    return (embedding = Lux.initialstates(rng, m.embedding),)
 end
 
 function (m::TokenEmbedding)(x, ps, st)
     emb, st_emb = m.embedding(x, ps.embedding, st.embedding)
     return emb, (embedding = st_emb,)
 end
+
+struct PositionEmbedding{E} <: Lux.AbstractLuxLayer
+    embedding::E
+    dim::Int
+    function PositionEmbedding{E}(embedding::E, dim::Int) where {E}
+        return new{E}(embedding, dim)
+    end
+end
+
+function PositionEmbedding(n_positions::Integer, d_model::Integer; dim::Int = 1)
+    emb = Lux.Embedding(n_positions => d_model)
+    return PositionEmbedding{typeof(emb)}(emb, dim)  # ← must have {typeof(emb)}
+end
+
+function Lux.initialparameters(rng::AbstractRNG, m::PositionEmbedding)
+    return (embedding = Lux.initialparameters(rng, m.embedding),)
+end
+
+function Lux.initialstates(rng::AbstractRNG, m::PositionEmbedding)
+    return (embedding = Lux.initialstates(rng, m.embedding),)
+end
+
+function (m::PositionEmbedding)(x, ps, st)
+    pos = 1:size(x, m.dim)
+    emb, st_emb = m.embedding(pos, ps.embedding, st.embedding)
+    return x .+ reshape(emb, size(emb)..., 1), (embedding = st_emb,)
+end
+
+# function (m::PositionEmbedding)(x, ps, st)
+#     pos = 1:size(x, m.dim)
+#     @info "PositionEmbedding: x shape=$(size(x)), dim=$(m.dim), pos=$pos"
+#     emb, st_emb = m.embedding(pos, ps.embedding, st.embedding)
+#     @info "PositionEmbedding: emb shape=$(size(emb))"
+#     result = x .+ reshape(emb, size(emb)..., 1)
+#     return result, (embedding = st_emb,)
+# end
 
 end

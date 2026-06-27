@@ -1,6 +1,7 @@
 module Decoder
 
 using Lux
+using Random
 using NNlib
 using ..Transformer
 using ..Embeddings
@@ -23,6 +24,24 @@ function WhisperDecoder(; n_vocab, d_model, n_layers, n_heads, max_positions)
             [TransformerBlock(d_model, n_heads; cross_attention = true) for _ in 1:n_layers]
         ),
         LayerNorm(d_model)
+    )
+end
+
+function Lux.initialparameters(rng::AbstractRNG, m::WhisperDecoder)
+    return (
+        token_embedding = Lux.initialparameters(rng, m.token_embedding),
+        position_embedding = Lux.initialparameters(rng, m.position_embedding),
+        layers = Lux.initialparameters(rng, m.layers),
+        norm = Lux.initialparameters(rng, m.norm),
+    )
+end
+
+function Lux.initialstates(rng::AbstractRNG, m::WhisperDecoder)
+    return (
+        token_embedding = Lux.initialstates(rng, m.token_embedding),
+        position_embedding = Lux.initialstates(rng, m.position_embedding),
+        layers = Lux.initialstates(rng, m.layers),
+        norm = Lux.initialstates(rng, m.norm),
     )
 end
 

@@ -27,7 +27,7 @@ Whisper = {rev = "la/shh_shh", url = "https://github.com/lazarusA/Whisper.jl.git
 [compat]
 Accessors = "0.1.45"
 DataStructures = "0.19.5"
-Downloads = "1.7.0"
+Downloads = "1.6, 1.7.0"
 Llama2 = "0.1.0"
 Lux = "1.31.4"
 NNlib = "0.9.37"
