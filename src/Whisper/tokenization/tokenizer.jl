@@ -46,23 +46,21 @@ function (t::BPETokenizer)(text::String)
 
     return ids
 end
-
-function decode(t::BPETokenizer, id::Int)
-    v = get(t.vocab.decoder, id, nothing)
-    return isnothing(v) ? t.vocab.special_decoder[id] : String(v)
-end
-
-function decode(t::BPETokenizer, ids::AbstractVector{Int}; include_specials::Bool = true)
+function decode(t::BPETokenizer, ids::AbstractVector{<:Integer}; include_specials::Bool = true)
     bytes = UInt8[]
     for id in ids
-        v = get(t.vocab.decoder, id, nothing)
+        v = get(t.vocab.decoder, Int64(id), nothing)
         if isnothing(v)
-            include_specials && append!(bytes, codeunits(t.vocab.special_decoder[id]))
+            include_specials && append!(bytes, codeunits(t.vocab.special_decoder[Int64(id)]))
         else
             append!(bytes, v)
         end
     end
     return String(bytes)
+end
+function decode(t::BPETokenizer, id::Integer)
+    v = get(t.vocab.decoder, Int64(id), nothing)
+    return isnothing(v) ? t.vocab.special_decoder[Int64(id)] : String(v)
 end
 
 end

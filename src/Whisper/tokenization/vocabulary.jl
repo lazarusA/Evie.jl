@@ -1,6 +1,8 @@
 module Vocabulary
+
 using Base64
-using OrderedCollections
+using DataStructures: OrderedDict
+
 include("specials.jl")
 
 export Vocab, load_vocab
