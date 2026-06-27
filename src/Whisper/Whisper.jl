@@ -6,7 +6,8 @@ using NNlib
 using Random
 using Downloads
 using Pickle
-using DataStructures
+using DataStructures: OrderedDict
+using Distributions: Categorical
 
 include("./models/attention.jl")
 include("./models/transformer.jl")
@@ -28,7 +29,14 @@ include("./weights/registry.jl")
 include("./weights/download.jl")
 include("./weights/loader.jl")
 include("./weights/mapping.jl")
+include("./weights/vocab.jl")
 
-export WhisperModel, download_weights, load_checkpoint, load_model
+# tokens
+include("./tokenization/vocabulary.jl")
+include("./tokenization/bpe.jl")
+include("./tokenization/tokenizer.jl")
+include("inference/transcribe.jl")
+
+export WhisperModel, download_weights, load_checkpoint, load_model, load_vocab_file
 
 end
