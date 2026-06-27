@@ -3,6 +3,8 @@ module Attention
 using Lux
 using NNlib
 
+export MultiHeadSelfAttention
+
 struct MultiHeadSelfAttention{Q, K, V, O} <: Lux.AbstractLuxLayer
     query::Q
     key::K

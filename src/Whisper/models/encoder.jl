@@ -3,6 +3,8 @@ module Encoder
 using Lux
 using ..Transformer
 
+export WhisperEncoder
+
 struct WhisperEncoder{C, L, N, P} <: Lux.AbstractLuxLayer
     frontend::C
     layers::L
