@@ -1,5 +1,7 @@
 module Masks
 
+using LinearAlgebra
+
 export causal_mask
 
 # true = keep, false = block — consistent with NNlib.dot_product_attention

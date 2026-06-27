@@ -23,7 +23,7 @@ function WhisperEncoder(; n_mels, d_model, n_layers, n_heads, max_positions)
         SequentialWithContext(
             [TransformerBlock(d_model, n_heads) for _ in 1:n_layers]
         ),
-        LayerNorm(d_model),
+        LayerNorm((d_model,)),
         PositionEmbedding(max_positions, d_model; dim = 2)
     )
 end

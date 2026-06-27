@@ -53,16 +53,7 @@ end
 function (m::PositionEmbedding)(x, ps, st)
     pos = 1:size(x, m.dim)
     emb, st_emb = m.embedding(pos, ps.embedding, st.embedding)
-    return x .+ reshape(emb, size(emb)..., 1), (embedding = st_emb,)
+    return x .+ reshape(emb, size(emb, 1), size(emb, 2), 1), (embedding = st_emb,)
 end
-
-# function (m::PositionEmbedding)(x, ps, st)
-#     pos = 1:size(x, m.dim)
-#     @info "PositionEmbedding: x shape=$(size(x)), dim=$(m.dim), pos=$pos"
-#     emb, st_emb = m.embedding(pos, ps.embedding, st.embedding)
-#     @info "PositionEmbedding: emb shape=$(size(emb))"
-#     result = x .+ reshape(emb, size(emb)..., 1)
-#     return result, (embedding = st_emb,)
-# end
 
 end
