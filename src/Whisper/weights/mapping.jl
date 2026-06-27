@@ -66,7 +66,6 @@ function map_encoder_block(ps, state, layer_name, prefix)
     return ps
 end
 
-# ── Decoder ───────────────────────────────────────────────────────────────────
 function map_decoder(ps, state)
     ps = @set ps.decoder.token_embedding.embedding.weight = to_emb(pop!(state, "decoder.token_embedding.weight"))
     ps = @set ps.decoder.position_embedding.embedding.weight = to_emb(pop!(state, "decoder.positional_embedding"))
