@@ -9,23 +9,23 @@ end
 function load_model(name::String; cache::String = joinpath(homedir(), ".cache", "Whisper.jl"))
     isdir(cache) || mkdir(cache)
 
-    url  = MODELS[name]
+    url = MODELS[name]
     file = download_weights(name, url, cache)
 
     checkpoint = load_checkpoint(file)
-    dims       = checkpoint["dims"]
+    dims = checkpoint["dims"]
 
     @info "Loaded checkpoint with dims: $dims"
 
     model = WhisperModel(;
-        n_mels            = dims["n_mels"],
-        d_model           = dims["n_audio_state"],
-        n_layers_enc      = dims["n_audio_layer"],
-        n_heads_enc       = dims["n_audio_head"],
+        n_mels = dims["n_mels"],
+        d_model = dims["n_audio_state"],
+        n_layers_enc = dims["n_audio_layer"],
+        n_heads_enc = dims["n_audio_head"],
         max_positions_enc = dims["n_audio_ctx"],
-        n_vocab           = dims["n_vocab"],
-        n_layers_dec      = dims["n_text_layer"],
-        n_heads_dec       = dims["n_text_head"],
+        n_vocab = dims["n_vocab"],
+        n_layers_dec = dims["n_text_layer"],
+        n_heads_dec = dims["n_text_head"],
         max_positions_dec = dims["n_text_ctx"]
     )
 

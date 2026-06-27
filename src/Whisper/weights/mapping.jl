@@ -36,13 +36,15 @@ function map_encoder(ps, state)
     # Transformer blocks
     for i in eachindex(ps.encoder.layers)
         name = Symbol(:layer, i)
-        ps = map_transformer_block(ps, state, name,
-            "encoder.blocks.$(i-1).", :encoder, false)
+        ps = map_transformer_block(
+            ps, state, name,
+            "encoder.blocks.$(i - 1).", :encoder, false
+        )
     end
 
     # Final norm
     ps = @set ps.encoder.norm.scale = pop!(state, "encoder.ln_post.weight")
-    ps = @set ps.encoder.norm.bias  = pop!(state, "encoder.ln_post.bias")
+    ps = @set ps.encoder.norm.bias = pop!(state, "encoder.ln_post.bias")
 
     return ps
 end
@@ -59,13 +61,15 @@ function map_decoder(ps, state)
     # Transformer blocks
     for i in eachindex(ps.decoder.layers)
         name = Symbol(:layer, i)
-        ps = map_transformer_block(ps, state, name,
-            "decoder.blocks.$(i-1).", :decoder, true)
+        ps = map_transformer_block(
+            ps, state, name,
+            "decoder.blocks.$(i - 1).", :decoder, true
+        )
     end
 
     # Final norm
     ps = @set ps.decoder.norm.scale = pop!(state, "decoder.ln.weight")
-    ps = @set ps.decoder.norm.bias  = pop!(state, "decoder.ln.bias")
+    ps = @set ps.decoder.norm.bias = pop!(state, "decoder.ln.bias")
 
     return ps
 end

@@ -29,6 +29,6 @@ include("./weights/download.jl")
 include("./weights/loader.jl")
 include("./weights/mapping.jl")
 
-export WhisperModel, download_weights, load_checkpoint, load_model 
+export WhisperModel, download_weights, load_checkpoint, load_model
 
 end
