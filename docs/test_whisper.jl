@@ -47,7 +47,19 @@ ps, st = Evie.Whisper.map_weights(model, checkpoint)
 @info "Weights mapped successfully"
 
 # Step 7 — Smoke test: run a dummy forward pass
-mel = randn(Float32, 3000, 80, 1);   # (time, n_mels, batch)
-tokens = Int32[1 2 3; 4 5 6];           # (seq_len, batch)
+mel = randn(Float32, 3000, 80, 1);
+tokens = reshape(Int32[1, 2, 3], 3, 1)
 out, st2 = model(mel, tokens, ps, st);
 @info "Forward pass output shape: $(size(out))"
+
+
+# Batch of 4 audio segments — (time_frames, n_mels, batch)
+mel = randn(Float32, 3000, 80, 4)
+
+# 3 tokens per sequence, repeated across 4 batch items — (seq_len, batch)
+# In real use: starts as [startoftranscript] and grows one token at a time
+tokens = repeat(reshape(Int32[1, 2, 3], 3, 1), 1, 4)
+
+# Forward pass — logits shape: (n_vocab, seq_len, batch) = (51864, 3, 4)
+out, st2 = model(mel, tokens, ps, st)
+@info "Output shape: $(size(out))"

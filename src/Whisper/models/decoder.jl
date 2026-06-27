@@ -19,7 +19,7 @@ end
 function WhisperDecoder(; n_vocab, d_model, n_layers, n_heads, max_positions)
     return WhisperDecoder(
         TokenEmbedding(n_vocab, d_model),
-        PositionEmbedding(max_positions, d_model; dim=2),
+        PositionEmbedding(max_positions, d_model; dim = 2),
         SequentialWithContext(
             [TransformerBlock(d_model, n_heads; cross_attention = true) for _ in 1:n_layers]
         ),
