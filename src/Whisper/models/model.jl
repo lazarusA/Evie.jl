@@ -22,8 +22,22 @@ function WhisperModel(;
     return WhisperModel(encoder, decoder)
 end
 
-function (m::WhisperModel)(mel, tokens, ps, st; mask = nothing)
+function Lux.initialparameters(rng::AbstractRNG, m::WhisperModel)
+    return (
+        encoder = Lux.initialparameters(rng, m.encoder),
+        decoder = Lux.initialparameters(rng, m.decoder),
+    )
+end
+
+function Lux.initialstates(rng::AbstractRNG, m::WhisperModel)
+    return (
+        encoder = Lux.initialstates(rng, m.encoder),
+        decoder = Lux.initialstates(rng, m.decoder),
+    )
+end
+
+function (m::WhisperModel)(mel, tokens, ps, st)
     enc, st_enc = m.encoder(mel, ps.encoder, st.encoder)
-    dec, st_dec = m.decoder(tokens, enc, ps.decoder, st.decoder; mask)
+    dec, st_dec = m.decoder(tokens, enc, ps.decoder, st.decoder)
     return dec, (encoder = st_enc, decoder = st_dec)
 end

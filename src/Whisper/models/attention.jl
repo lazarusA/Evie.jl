@@ -1,6 +1,7 @@
 module Attention
 
 using Lux
+using Random
 using NNlib
 
 export MultiHeadSelfAttention
@@ -20,6 +21,24 @@ function MultiHeadSelfAttention(d_model, n_heads)
         Dense(d_model => d_model),
         Dense(d_model => d_model),
         n_heads
+    )
+end
+
+function Lux.initialparameters(rng::AbstractRNG, m::MultiHeadSelfAttention)
+    return (
+        query = Lux.initialparameters(rng, m.query),
+        key = Lux.initialparameters(rng, m.key),
+        value = Lux.initialparameters(rng, m.value),
+        out = Lux.initialparameters(rng, m.out),
+    )
+end
+
+function Lux.initialstates(rng::AbstractRNG, m::MultiHeadSelfAttention)
+    return (
+        query = Lux.initialstates(rng, m.query),
+        key = Lux.initialstates(rng, m.key),
+        value = Lux.initialstates(rng, m.value),
+        out = Lux.initialstates(rng, m.out),
     )
 end
 

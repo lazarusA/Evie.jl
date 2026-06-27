@@ -1,6 +1,7 @@
 module Transformer
 
 using Lux
+using Random
 using ..Attention
 
 export TransformerBlock, SequentialWithContext
@@ -22,14 +23,36 @@ function TransformerBlock(d_model, n_heads; cross_attention = false)
 
     return TransformerBlock(
         MultiHeadSelfAttention(d_model, n_heads),
-        LayerNorm(d_model),
+        LayerNorm((d_model,)),
         cross_attention ? MultiHeadSelfAttention(d_model, n_heads) : NoOpLayer(),
-        cross_attention ? LayerNorm(d_model) : NoOpLayer(),
+        cross_attention ? LayerNorm((d_model,)) : NoOpLayer(),
         Chain(
             Dense(d_model => 4d_model, gelu),
             Dense(4d_model => d_model)
         ),
-        LayerNorm(d_model)
+        LayerNorm((d_model,))
+    )
+end
+
+function Lux.initialparameters(rng::AbstractRNG, m::TransformerBlock)
+    return (
+        attention = Lux.initialparameters(rng, m.attention),
+        norm1 = Lux.initialparameters(rng, m.norm1),
+        cross_attention = Lux.initialparameters(rng, m.cross_attention),
+        norm_cross = Lux.initialparameters(rng, m.norm_cross),
+        feedforward = Lux.initialparameters(rng, m.feedforward),
+        norm2 = Lux.initialparameters(rng, m.norm2),
+    )
+end
+
+function Lux.initialstates(rng::AbstractRNG, m::TransformerBlock)
+    return (
+        attention = Lux.initialstates(rng, m.attention),
+        norm1 = Lux.initialstates(rng, m.norm1),
+        cross_attention = Lux.initialstates(rng, m.cross_attention),
+        norm_cross = Lux.initialstates(rng, m.norm_cross),
+        feedforward = Lux.initialstates(rng, m.feedforward),
+        norm2 = Lux.initialstates(rng, m.norm2),
     )
 end
 
@@ -69,8 +92,20 @@ function (m::TransformerBlock)(x, ps, st; context = nothing, mask = nothing)
 end
 
 function SequentialWithContext(layers::Vector)
-    names = Tuple(Symbol(:layer, i) for i in eachindex(layers))
+    names = Tuple(Symbol(:layer_, i) for i in eachindex(layers))
     return SequentialWithContext(NamedTuple{names}(layers))
+end
+
+function Lux.initialparameters(rng::AbstractRNG, m::SequentialWithContext)
+    return NamedTuple{keys(m.layers)}(
+        Lux.initialparameters(rng, l) for l in values(m.layers)
+    )
+end
+
+function Lux.initialstates(rng::AbstractRNG, m::SequentialWithContext)
+    return NamedTuple{keys(m.layers)}(
+        Lux.initialstates(rng, l) for l in values(m.layers)
+    )
 end
 
 function (m::SequentialWithContext)(x, ps, st; context = nothing, mask = nothing)
