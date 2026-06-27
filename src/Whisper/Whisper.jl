@@ -1,18 +1,12 @@
 module Whisper
 
+using Accessors
 using Lux
-
-struct WhisperModel{E, D} <: Lux.AbstractLuxLayer
-    encoder::E
-    decoder::D
-end
-
-function (m::WhisperModel)(mel, tokens, ps, st; mask = nothing)
-    enc, st_enc = m.encoder(mel, ps.encoder, st.encoder)
-    dec, st_dec = m.decoder(tokens, enc, ps.decoder, st.decoder; mask)
-
-    return dec, (encoder = st_enc, decoder = st_dec)
-end
+using NNlib
+using Random
+using Downloads
+using Pickle
+using DataStructures
 
 include("./models/attention.jl")
 include("./models/transformer.jl")
@@ -21,25 +15,20 @@ include("./models/masks.jl")
 include("./models/encoder.jl")
 include("./models/decoder.jl")
 
-function WhisperModel(;
-        n_mels, d_model, n_layers_enc, n_heads_enc, max_positions_enc,
-        n_vocab, n_layers_dec, n_heads_dec, max_positions_dec
-    )
-    encoder = WhisperEncoder(;
-        n_mels, d_model,
-        n_layers = n_layers_enc,
-        n_heads = n_heads_enc,
-        max_positions = max_positions_enc
-    )
-    decoder = WhisperDecoder(;
-        n_vocab, d_model,
-        n_layers = n_layers_dec,
-        n_heads = n_heads_dec,
-        max_positions = max_positions_dec
-    )
-    return WhisperModel(encoder, decoder)
-end
+using .Masks
+using .Embeddings
+using .Attention
+using .Transformer
+using .Encoder
+using .Decoder
 
-export WhisperModel
+include("./models/model.jl")
+
+include("./weights/registry.jl")
+include("./weights/download.jl")
+include("./weights/loader.jl")
+include("./weights/mapping.jl")
+
+export WhisperModel, download_weights, load_checkpoint, load_model
 
 end
