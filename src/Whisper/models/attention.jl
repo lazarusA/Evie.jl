@@ -1,9 +1,3 @@
-module Attention
-
-using Lux
-using Random
-using NNlib
-
 export MultiHeadSelfAttention
 
 struct MultiHeadSelfAttention{Q, K, V, O} <: Lux.AbstractLuxLayer
@@ -54,6 +48,4 @@ function (m::MultiHeadSelfAttention)(x, ps, st; context = nothing, mask = nothin
     out, st_out = m.out(y, ps.out, st.out)
 
     return out, (query = st_q, key = st_k, value = st_v, out = st_out)
-end
-
 end

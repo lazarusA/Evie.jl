@@ -1,12 +1,3 @@
-module Decoder
-
-using Lux
-using Random
-using NNlib
-using ..Transformer
-using ..Embeddings
-using ..Masks
-
 export WhisperDecoder
 
 struct WhisperDecoder{T, P, L, N} <: Lux.AbstractLuxLayer
@@ -70,4 +61,4 @@ function (m::WhisperDecoder)(tokens, encoder_out, ps, st)
         )
 end
 
-end
+causal_mask(n::Int) = tril(ones(Bool, n, n))

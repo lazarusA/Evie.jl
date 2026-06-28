@@ -1,4 +1,3 @@
-# audio/samples.jl
 const SAMPLE_URLS = Dict(
     "gb0.oga" => "https://upload.wikimedia.org/wikipedia/commons/2/22/George_W._Bush%27s_weekly_radio_address_%28November_1%2C_2008%29.oga",
     "gb1.ogg" => "https://upload.wikimedia.org/wikipedia/commons/1/1f/George_W_Bush_Columbia_FINAL.ogg",
