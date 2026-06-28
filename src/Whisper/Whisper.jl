@@ -1,19 +1,22 @@
 module Whisper
 
-using Accessors
-using Lux
-using NNlib
-using Random
-using Downloads
-using Pickle
+using AbstractFFTs: AbstractFFTs, fftfreq, rfft
+using Accessors: Accessors, @set
+using Base64: Base64
 using DataStructures: OrderedDict
 using Distributions: Categorical
+using Downloads: Downloads
+using FFTW: FFTW
+using FileIO: FileIO
+using LibSndFile: LibSndFile
 using LinearAlgebra: tril
-using Base64
-using Printf
-using FileIO
-using LibSndFile
-using SampledSignals
+using Lux: Lux, Chain, Conv, Dense, LayerNorm, NoOpLayer
+using NNlib: NNlib, dot_product_attention, gelu, softmax, ⊠
+using Pickle: Pickle
+using Printf: Printf, @sprintf
+using Random: Random, AbstractRNG
+using SampledSignals: SampledSignals, SampleBuf, SampleBufSink, SampleBufSource, nchannels, nframes, samplerate
+using Statistics: Statistics
 
 include("./models/attention.jl")
 include("./models/transformer.jl")
