@@ -1,38 +1,55 @@
+using NNlib
+
+export transcribe
+
 function transcribe(
         mel, ps, st, model, tokenizer;
         max_tokens::Int = 224,
-        temperature::Float32 = 0.0f0
+        temperature::Float32 = 0.0f0,
     )
-    # Run encoder once — reuse for all decoder steps
-    enc, st_enc = model.encoder(mel, ps.encoder, st.encoder)
+    enc, _ = model.encoder(mel, ps.encoder, st.encoder)
 
-    # Start with [startoftranscript] token
     sot_id = tokenizer.vocab.special_tokens["<|startoftranscript|>"]
     eot_id = tokenizer.vocab.special_tokens["<|endoftext|>"]
-    tokens = Int32[sot_id]
+    not_id = tokenizer.vocab.special_tokens["<|notimestamps|>"]
+
+    # 0-based token ids (as stored in vocab)
+    tokens = Int64[sot_id]
+    if haskey(tokenizer.vocab.special_tokens, "<|en|>")
+        push!(tokens, tokenizer.vocab.special_tokens["<|en|>"])
+        push!(tokens, tokenizer.vocab.special_tokens["<|transcribe|>"])
+    end
+    push!(tokens, not_id)
+
+    # Collect special token ids to suppress (0-based)
+    suppress_ids = Set{Int64}(values(tokenizer.vocab.special_tokens))
+    delete!(suppress_ids, eot_id)
 
     for _ in 1:max_tokens
-        # Build token input — (seq_len, 1) for batch=1
-        ctx = reshape(tokens, :, 1)
-
-        # Decoder forward pass
+        ctx = reshape(Int32.(tokens), :, 1)
         logits, _ = model.decoder(ctx, enc, ps.decoder, st.decoder)
-
-        # Take logits at last position only — (n_vocab,)
         last_logits = logits[:, end, 1]
 
-        # Sample next token
-        next_id = if temperature ≈ 0.0f0
-            # Greedy — pick highest logit
-            argmax(last_logits)
+        # Suppress special tokens
+        # logits index is 1-based, token ids are 0-based → add 1
+        for id in suppress_ids
+            idx = id + 1
+            if 1 <= idx <= length(last_logits)
+                last_logits[idx] = -Inf32
+            end
+        end
+
+        next_idx = if temperature ≈ 0.0f0
+            argmax(last_logits)        # 1-based index
         else
-            # Temperature sampling
             probs = softmax(last_logits ./ temperature)
             rand(Categorical(Float64.(probs)))
         end
 
-        # Append and check for end
-        push!(tokens, Int32(next_id))
+        # Convert back to 0-based token id
+        next_id = next_idx - 1
+
+        push!(tokens, Int64(next_id))
         next_id == eot_id && break
     end
 

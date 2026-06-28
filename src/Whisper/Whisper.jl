@@ -37,6 +37,11 @@ include("./tokenization/bpe.jl")
 include("./tokenization/tokenizer.jl")
 include("inference/transcribe.jl")
 
+# audio
+include("audio/samples.jl")
+include("audio/load.jl")
+include("audio/preprocess.jl")
+
 export WhisperModel, download_weights, load_checkpoint, load_model, load_vocab_file
 
 end
