@@ -22,13 +22,13 @@ model, ps, st = Evie.Whisper.load_model(name; cache);
 
 # Load tokenizer
 vocab_file = Evie.Whisper.load_vocab_file(; multilingual = false)
-vocab = Evie.Whisper.Vocabulary.load_vocab(vocab_file);
-tokenizer = Evie.Whisper.Tokenizer.BPETokenizer(vocab);
+vocab = Evie.Whisper.load_vocab(vocab_file);
+tokenizer = Evie.Whisper.BPETokenizer(vocab);
 
 waveform = Evie.Whisper.load_audio(file)   # Vector{Float32} at 16kHz
 mel = Evie.Whisper.prep_audio(waveform) # (3000, 80, 1)
 tokens = Evie.Whisper.transcribe(mel, ps, st, model, tokenizer)
-text = Evie.Whisper.Tokenizer.decode(tokenizer, Int64.(tokens));
+text = Evie.Whisper.decode(tokenizer, Int64.(tokens));
 @info "Transcription: $text"
 
 file = Evie.Whisper.download_sample("gb1.ogg"; cache)

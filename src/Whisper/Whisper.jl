@@ -9,7 +9,7 @@ using Downloads: Downloads
 using FFTW: FFTW
 using FileIO: FileIO
 using LibSndFile: LibSndFile
-using LinearAlgebra: tril
+using LinearAlgebra: triu
 using Lux: Lux, Chain, Conv, Dense, LayerNorm, NoOpLayer
 using NNlib: NNlib, dot_product_attention, gelu, softmax, ⊠
 using Pickle: Pickle

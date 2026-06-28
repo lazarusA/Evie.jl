@@ -19,14 +19,24 @@ function transcribe(
     end
     push!(tokens, not_id)
 
+    @info "token 13" decoded=decode(tokenizer, 13)
     # Collect special token ids to suppress (0-based)
     suppress_ids = Set{Int64}(values(tokenizer.vocab.special_tokens))
     delete!(suppress_ids, eot_id)
 
-    for _ in 1:max_tokens
+    for step in 1:max_tokens
         ctx = reshape(Int32.(tokens), :, 1)
         logits, _ = model.decoder(ctx, enc, ps.decoder, st.decoder)
         last_logits = logits[:, end, 1]
+
+        if step == 5
+            top10_ids = partialsortperm(last_logits, 1:10, rev=true)
+            @info "Step 5 top10 (before suppression)" begin
+                top10_vals    = sort(last_logits, rev=true)[1:10]
+                top10_decoded = [decode(tokenizer, id) for id in top10_ids .- 1]
+                (; top10_ids, top10_vals, top10_decoded)
+            end
+        end
 
         # Suppress special tokens
         # logits index is 1-based, token ids are 0-based → add 1

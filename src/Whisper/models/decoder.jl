@@ -61,4 +61,4 @@ function (m::WhisperDecoder)(tokens, encoder_out, ps, st)
         )
 end
 
-causal_mask(n::Int) = tril(ones(Bool, n, n))
+causal_mask(n::Int) = triu(ones(Bool, n, n))
