@@ -1,8 +1,3 @@
-module Embeddings
-
-using Lux
-using Random
-
 export TokenEmbedding, PositionEmbedding
 
 struct TokenEmbedding{E} <: Lux.AbstractLuxLayer
@@ -14,8 +9,9 @@ end
 
 function TokenEmbedding(n_vocab::Integer, d_model::Integer)
     emb = Lux.Embedding(n_vocab => d_model)
-    return TokenEmbedding{typeof(emb)}(emb)  # ← must have {typeof(emb)}
+    return TokenEmbedding{typeof(emb)}(emb)
 end
+
 function Lux.initialparameters(rng::AbstractRNG, m::TokenEmbedding)
     return (embedding = Lux.initialparameters(rng, m.embedding),)
 end
@@ -39,7 +35,7 @@ end
 
 function PositionEmbedding(n_positions::Integer, d_model::Integer; dim::Int = 1)
     emb = Lux.Embedding(n_positions => d_model)
-    return PositionEmbedding{typeof(emb)}(emb, dim)  # ← must have {typeof(emb)}
+    return PositionEmbedding{typeof(emb)}(emb, dim)
 end
 
 function Lux.initialparameters(rng::AbstractRNG, m::PositionEmbedding)
@@ -54,6 +50,4 @@ function (m::PositionEmbedding)(x, ps, st)
     pos = 1:size(x, m.dim)
     emb, st_emb = m.embedding(pos, ps.embedding, st.embedding)
     return x .+ reshape(emb, size(emb, 1), size(emb, 2), 1), (embedding = st_emb,)
-end
-
 end

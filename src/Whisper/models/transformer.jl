@@ -1,9 +1,3 @@
-module Transformer
-
-using Lux
-using Random
-using ..Attention
-
 export TransformerBlock, SequentialWithContext
 
 struct TransformerBlock{A, N, CA, CN, F, LN} <: Lux.AbstractLuxLayer
@@ -115,6 +109,4 @@ function (m::SequentialWithContext)(x, ps, st; context = nothing, mask = nothing
         st_new = merge(st_new, (; name => st_i))
     end
     return x, st_new
-end
-
 end

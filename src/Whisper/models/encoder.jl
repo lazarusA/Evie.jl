@@ -1,10 +1,3 @@
-module Encoder
-
-using Lux
-using Random
-using ..Transformer
-using ..Embeddings
-
 export WhisperEncoder
 
 struct WhisperEncoder{C, L, N, P} <: Lux.AbstractLuxLayer
@@ -52,6 +45,4 @@ function (m::WhisperEncoder)(x, ps, st)
     x, st_ly = m.layers(x, ps.layers, st.layers)
     x, st_n = m.norm(x, ps.norm, st.norm)
     return x, (frontend = st_fe, layers = st_ly, norm = st_n, position = st_pos)
-end
-
 end
