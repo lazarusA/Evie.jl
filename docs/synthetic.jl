@@ -19,10 +19,10 @@ mel_test = ones(Float32, 3000, 80, 1) .* 0.5f0
 
 # Lux
 enc_lux, _ = model.encoder(mel_test, ps.encoder, st.encoder)
-@info "Lux encoder output" mean=Statistics.mean(enc_lux) std=Statistics.std(enc_lux)
+@info "Lux encoder output" mean = Statistics.mean(enc_lux) std = Statistics.std(enc_lux)
 
 # Flux — load the same checkpoint
 import Flux
 flux_model = FluxWhisper.WHISPER("base")  # or whichever model you're using
 enc_flux = flux_model.encoder(permutedims(mel_test, (1, 2, 3)))
-@info "Flux encoder output" mean=Statistics.mean(enc_flux) std=Statistics.std(enc_flux)
+@info "Flux encoder output" mean = Statistics.mean(enc_flux) std = Statistics.std(enc_flux)

@@ -10,13 +10,13 @@ end
 function WhisperEncoder(; n_mels, d_model, n_layers, n_heads, max_positions)
     return WhisperEncoder(
         Chain(
-            Conv((3,), n_mels => d_model, gelu; pad = 1, cross_correlation=true),
-            Conv((3,), d_model => d_model, gelu; pad = 1, stride = 2, cross_correlation=true)
+            Conv((3,), n_mels => d_model, gelu; pad = 1, cross_correlation = true),
+            Conv((3,), d_model => d_model, gelu; pad = 1, stride = 2, cross_correlation = true)
         ),
         SequentialWithContext(
             [TransformerBlock(d_model, n_heads) for _ in 1:n_layers]
         ),
-        LayerNorm((d_model,); dims=1),
+        LayerNorm((d_model,); dims = 1),
         PositionEmbedding(max_positions, d_model; dim = 2)
     )
 end
