@@ -14,7 +14,7 @@ function WhisperDecoder(; n_vocab, d_model, n_layers, n_heads, max_positions)
         SequentialWithContext(
             [TransformerBlock(d_model, n_heads; cross_attention = true) for _ in 1:n_layers]
         ),
-        LayerNorm((d_model,))
+        LayerNorm((d_model,); dims = 1)
     )
 end
 
@@ -61,4 +61,4 @@ function (m::WhisperDecoder)(tokens, encoder_out, ps, st)
         )
 end
 
-causal_mask(n::Int) = tril(ones(Bool, n, n))
+causal_mask(n::Int) = triu(ones(Bool, n, n))

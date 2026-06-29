@@ -37,7 +37,7 @@ end
 
 to_vec(x) = collect(Float32.(vec(x)))
 to_matrix(x) = collect(Float32.(x))
-to_conv(x) = collect(Float32.(permutedims(x, (3, 2, 1))[end:-1:1, :, :]))
+to_conv(x) = collect(Float32.(permutedims(x, (3, 2, 1))))
 to_emb(x) = collect(Float32.(transpose(x)))
 to_ln(x) = collect(Float32.(reshape(vec(x), :, 1, 1)))
 
