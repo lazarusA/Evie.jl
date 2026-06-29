@@ -7,7 +7,7 @@ import { MicButton, type MicState } from "@/components/MicButton";
 import { VoiceBar } from "@/components/VoiceBar";
 import { ConversationThread, type Message } from "@/components/ConversationThread";
 import { AudioUploadButton } from "@/components/AudioUploadButton";
-import { ThemeToggle } from "@/components/ThemeToggle"
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 // ── Demo conversation pairs ───────────────────────────────────────────────────
 
@@ -136,16 +136,13 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-svh bg-background text-foreground flex flex-col items-center">
-      <div className="w-full max-w-xl flex flex-col min-h-svh px-4 py-6 gap-4 sm:py-8">
+    <div className="h-svh overflow-hidden bg-background text-foreground flex flex-col items-center">
+      <div className="w-full max-w-xl flex flex-col h-full px-4 py-6 gap-4 sm:py-8">
 
         {/* ── Header ───────────────────────────────────────────────────────── */}
         <header className="flex items-center justify-between">
           <div className="flex flex-col leading-none">
-            <span className="text-base font-bold tracking-tight">Evie</span>
-            <span className="text-[11px] text-muted-foreground font-medium tracking-wide">
-              offline · Evie.jl
-            </span>
+            <span className="text-base font-bold tracking-tight">Evie.jl</span>
           </div>
           {/* Status dot + theme toggle */}
           <div className="flex items-center gap-3">
@@ -169,7 +166,7 @@ export default function Home() {
         </header>
 
         {/* ── Conversation ─────────────────────────────────────────────────── */}
-        <section className="flex-1 overflow-y-auto -mx-1 px-1">
+        <section className="flex-1 min-h-0 overflow-y-auto -mx-1 px-1">
           <ConversationThread messages={messages} transcribing={transcribing} />
         </section>
 
