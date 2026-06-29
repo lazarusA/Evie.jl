@@ -37,7 +37,6 @@ function Lux.initialstates(rng::AbstractRNG, m::MultiHeadSelfAttention)
 end
 
 function (m::MultiHeadSelfAttention)(x, ps, st; context = nothing, mask = nothing)
-    # @info "MultiHeadSelfAttention" is_cross=!isnothing(context) mask_is_nothing=isnothing(mask) mask_size=(isnothing(mask) ? nothing : size(mask))
     src = isnothing(context) ? x : context
 
     q, st_q = m.query(x, ps.query, st.query)

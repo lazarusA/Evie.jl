@@ -50,28 +50,23 @@ function Lux.initialstates(rng::AbstractRNG, m::TransformerBlock)
     )
 end
 
-# cross-attention present
 function _cross_attn(m::TransformerBlock, x, ps, st, context)
     y, st_cn = m.norm_cross(x, ps.norm_cross, st.norm_cross)
     y, st_ca = m.cross_attention(y, ps.cross_attention, st.cross_attention; context)
     return x .+ y, st_ca, st_cn
 end
 
-# no cross-attention
 function _cross_attn(m::TransformerBlock{A, N, NoOpLayer, NoOpLayer}, x, ps, st, context) where {A, N}
     return x, st.cross_attention, st.norm_cross
 end
 
 function (m::TransformerBlock)(x, ps, st; context = nothing, mask = nothing)
-    # Self-attention block (pre-norm)
     y, st_n1 = m.norm1(x, ps.norm1, st.norm1)
     y, st_attn = m.attention(y, ps.attention, st.attention; mask)
     x = x .+ y
 
-    # Cross-attention block
     x, st_ca, st_cn = _cross_attn(m, x, ps, st, context)
 
-    # Feedforward block (pre-norm)
     y, st_n2 = m.norm2(x, ps.norm2, st.norm2)
     y, st_ff = m.feedforward(y, ps.feedforward, st.feedforward)
 

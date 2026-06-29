@@ -47,9 +47,7 @@ function Lux.initialstates(rng::AbstractRNG, m::PositionEmbedding)
 end
 
 function (m::PositionEmbedding)(x, ps, st)
-    # @info "PositionEmbedding" dim=m.dim x_size=size(x) queried_dim=size(x, m.dim)
     pos = 1:size(x, m.dim)
     emb, st_emb = m.embedding(pos, ps.embedding, st.embedding)
-    # @info "embedding result" emb_size=size(emb)
     return x .+ reshape(emb, size(emb, 1), size(emb, 2), 1), (embedding = st_emb,)
 end

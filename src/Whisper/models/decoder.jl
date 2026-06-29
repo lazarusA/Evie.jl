@@ -37,20 +37,13 @@ function Lux.initialstates(rng::AbstractRNG, m::WhisperDecoder)
 end
 
 function (m::WhisperDecoder)(tokens, encoder_out, ps, st)
-    # Token + positional embeddings
     x, st_te = m.token_embedding(tokens .+ Int32(1), ps.token_embedding, st.token_embedding)
     x, st_pe = m.position_embedding(x, ps.position_embedding, st.position_embedding)
 
-    # Causal mask for self-attention
     mask = causal_mask(size(tokens, 1))
-
-    # Transformer layers — context and mask threaded via SequentialWithContext
     x, st_ly = m.layers(x, ps.layers, st.layers; context = encoder_out, mask)
 
-    # Final norm
     x, st_n = m.norm(x, ps.norm, st.norm)
-
-    # Tied output projection
     logits = ps.token_embedding.embedding.weight' ⊠ x
 
     return logits, (
