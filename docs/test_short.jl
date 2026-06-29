@@ -16,13 +16,18 @@ cache = joinpath(homedir(), "Documents/Evie.jl/docs", "models")
 model, ps, st = Evie.Whisper.load_model(name; cache);
 
 # Load tokenizer
-vocab_file = Evie.Whisper.load_vocab_file(; multilingual = false)
+vocab_file = Evie.Whisper.load_vocab_file(; multilingual = false);
 vocab = Evie.Whisper.load_vocab(vocab_file);
 tokenizer = Evie.Whisper.BPETokenizer(vocab);
 
-waveform = Evie.Whisper.load_audio(file)   # Vector{Float32} at 16kHz
-mel = Evie.Whisper.prep_audio(waveform) # (3000, 80, 1)
-tokens = Evie.Whisper.transcribe(mel, ps, st, model, tokenizer; temperature = 0.35f0)
+# waveform = Evie.Whisper.load_audio(file)   # Vector{Float32} at 16kHz
+waveform = load_audio(file);
+mel = Evie.Whisper.prep_audio(Float32.(waveform)) # (3000, 80, 1)
+tokens = Evie.Whisper.transcribe(mel, ps, st, model, tokenizer) # temperature = 0.35f0
+
+txt_full = Evie.Whisper.transcribe_file(file, ps, st, model, tokenizer)
+
+# @info "Full file"
 text = Evie.Whisper.decode(tokenizer, Int64.(tokens));
 @info "Transcription: $text"
 
@@ -76,3 +81,66 @@ end
         eot_norm = LinearAlgebra.norm(raw_eot),
     )
 end
+
+#! debug audio
+
+waveform = Evie.Whisper.load_audio(file)
+@info "Audio structure" begin
+    total_seconds = length(waveform) / 16_000
+    # Energy per 10-second window
+    window = 16_000 * 10
+    n_windows = length(waveform) ÷ window
+    energies = [Statistics.mean(waveform[((i - 1) * window + 1):(i * window)] .^ 2) for i in 1:n_windows]
+    (; total_seconds, n_windows, energies)
+end
+
+# What does the first chunk's waveform look like?
+chunks_wav = [waveform[((i - 1) * 480_000 + 1):min(i * 480_000, length(waveform))] for i in 1:7]
+energies = [Statistics.mean(c .^ 2) for c in chunks_wav]
+@info "Chunk energies" energies
+
+function load_audio(path::String)
+    return mktempdir() do tmp
+        out = joinpath(tmp, "audio.flac")
+        run(`ffmpeg -nostdin -threads 0 -i $path -ac 1 -ar 16000 -f flac $out -y`)
+        s, sr = FileIO.load(out)
+        @assert sr == 16_000
+        return vec(Array(s))
+    end
+end
+
+using FFMPEG
+
+function load_audio_ff(path::String)
+    return mktempdir() do tmp
+        out = joinpath(tmp, "audio.flac")
+        FFMPEG.exe(`-nostdin -threads 0 -i $path -ac 1 -ar 16000 -f flac $out -y`)
+        s = FileIO.load(out)
+        return vec(Array(s))
+    end
+end
+
+
+# only 10 seconds
+waveform = load_audio(file);
+
+# Just the first 30 seconds
+chunk1 = Float32.(waveform[1:480_000])
+mel1 = Evie.Whisper.prep_audio(chunk1)
+
+@info "Chunk 1 mel" size = size(mel1) min = minimum(mel1) max = maximum(mel1)
+
+# Energy of first vs last 5 seconds of chunk 1
+first_5s = waveform[1:80_000]
+last_5s = waveform[400_001:480_000]
+@info "Chunk 1 energy" begin
+    e_first = Statistics.mean(first_5s .^ 2)
+    e_last = Statistics.mean(last_5s .^ 2)
+    (; e_first, e_last)
+end
+
+# Try transcribing JUST the first 10 seconds padded to 30
+chunk_10s = vcat(waveform[1:160_000], zeros(Float32, 320_000))
+mel_10s = Evie.Whisper.prep_audio(chunk_10s)
+tokens = Evie.Whisper.transcribe(mel_10s, ps, st, model, tokenizer)
+@info "First 10s only" Evie.Whisper.decode(tokenizer, tokens; include_specials = false)
