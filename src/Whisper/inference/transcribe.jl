@@ -19,7 +19,7 @@ function transcribe(
     end
     push!(tokens, not_id)
 
-    @info "token 13" decoded=decode(tokenizer, 13)
+    # @info "token 13" decoded=decode(tokenizer, 13)
     # Collect special token ids to suppress (0-based)
     suppress_ids = Set{Int64}(values(tokenizer.vocab.special_tokens))
     delete!(suppress_ids, eot_id)
@@ -29,14 +29,14 @@ function transcribe(
         logits, _ = model.decoder(ctx, enc, ps.decoder, st.decoder)
         last_logits = logits[:, end, 1]
 
-        if step == 5
-            top10_ids = partialsortperm(last_logits, 1:10, rev=true)
-            @info "Step 5 top10 (before suppression)" begin
-                top10_vals    = sort(last_logits, rev=true)[1:10]
-                top10_decoded = [decode(tokenizer, id) for id in top10_ids .- 1]
-                (; top10_ids, top10_vals, top10_decoded)
-            end
-        end
+        # if step == 5
+        #     top10_ids = partialsortperm(last_logits, 1:10, rev=true)
+        #     @info "Step 5 top10 (before suppression)" begin
+        #         top10_vals    = sort(last_logits, rev=true)[1:10]
+        #         top10_decoded = [decode(tokenizer, id) for id in top10_ids .- 1]
+        #         (; top10_ids, top10_vals, top10_decoded)
+        #     end
+        # end
 
         # Suppress special tokens
         # logits index is 1-based, token ids are 0-based → add 1
@@ -50,8 +50,9 @@ function transcribe(
         next_idx = if temperature ≈ 0.0f0
             argmax(last_logits)        # 1-based index
         else
-            probs = softmax(last_logits ./ temperature)
-            rand(Categorical(Float64.(probs)))
+            probs = softmax(Float64.(last_logits) ./ Float64(temperature))
+            probs ./= sum(probs)  # renormalize to ensure exact sum = 1.0
+            rand(Categorical(probs))
         end
 
         # Convert back to 0-based token id

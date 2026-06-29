@@ -17,14 +17,14 @@ function TransformerBlock(d_model, n_heads; cross_attention = false)
 
     return TransformerBlock(
         MultiHeadSelfAttention(d_model, n_heads),
-        LayerNorm((d_model,)),
+        LayerNorm((d_model,); dims=1),
         cross_attention ? MultiHeadSelfAttention(d_model, n_heads) : NoOpLayer(),
-        cross_attention ? LayerNorm((d_model,)) : NoOpLayer(),
+        cross_attention ? LayerNorm((d_model,); dims=1) : NoOpLayer(),
         Chain(
             Dense(d_model => 4d_model, gelu),
             Dense(4d_model => d_model)
         ),
-        LayerNorm((d_model,))
+        LayerNorm((d_model,); dims=1)
     )
 end
 
