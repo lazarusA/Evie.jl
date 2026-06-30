@@ -1,10 +1,27 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { MessageCircleDashedIcon } from "lucide-react";
+
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Bubble, BubbleContent } from "@/components/ui/bubble";
+import { Marker, MarkerContent } from "@/components/ui/marker";
+import {
+  Message,
+  MessageAvatar,
+  MessageContent,
+  MessageFooter,
+} from "@/components/ui/message";
+import {
+  MessageScroller,
+  MessageScrollerButton,
+  MessageScrollerContent,
+  MessageScrollerProvider,
+  MessageScrollerViewport,
+} from "@/components/ui/message-scroller";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-export interface Message {
+export interface MessageData {
   id: string;
   role: "user" | "evie";
   text: string;
@@ -13,53 +30,32 @@ export interface Message {
 }
 
 interface ConversationThreadProps {
-  messages: Message[];
+  messages: MessageData[];
   /** Show the STT "transcribing your voice" indicator */
   transcribing?: boolean;
 }
 
-// ── Typing dots (shown while Evie is thinking / STT is running) ───────────────
+// ── Single message ────────────────────────────────────────────────────────────
 
-function TypingDots() {
-  return (
-    <span className="inline-flex items-end gap-[3px] h-4 ml-1" aria-label="…">
-      {[0, 150, 300].map((delay) => (
-        <span
-          key={delay}
-          className="block w-1 h-1 rounded-full bg-current animate-bounce"
-          style={{ animationDelay: `${delay}ms` }}
-        />
-      ))}
-    </span>
-  );
-}
-
-// ── Single message bubble ─────────────────────────────────────────────────────
-
-function Bubble({ message }: { message: Message }) {
+function ChatMessage({ message }: { message: MessageData }) {
   const isUser = message.role === "user";
-  return (
-    <div className={["flex gap-3", isUser ? "flex-row-reverse" : "flex-row"].join(" ")}>
-      {/* Avatar */}
-      {!isUser && (
-        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-bold select-none">
-          E
-        </span>
-      )}
 
-      {/* Bubble */}
-      <div
-        className={[
-          "max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
-          isUser
-            ? "bg-primary text-primary-foreground rounded-tr-sm"
-            : "bg-muted text-foreground rounded-tl-sm",
-        ].join(" ")}
-      >
-        {message.text}
-        {message.streaming && <TypingDots />}
-      </div>
-    </div>
+  return (
+    <Message align={isUser ? "end" : "start"}>
+      <MessageAvatar>
+        <Avatar className="h-7 w-7">
+          <AvatarFallback>{isUser ? "U" : "E"}</AvatarFallback>
+        </Avatar>
+      </MessageAvatar>
+      <MessageContent>
+        <Bubble variant={isUser ? undefined : "muted"}>
+          <BubbleContent>{message.text}</BubbleContent>
+        </Bubble>
+        {message.streaming && (
+          <MessageFooter>Evie is typing…</MessageFooter>
+        )}
+      </MessageContent>
+    </Message>
   );
 }
 
@@ -69,17 +65,10 @@ export function ConversationThread({
   messages,
   transcribing = false,
 }: ConversationThreadProps) {
-  const bottomRef = useRef<HTMLDivElement>(null);
-
-  // Scroll to bottom whenever messages update
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, transcribing]);
-
   if (messages.length === 0 && !transcribing) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center select-none py-16">
-        <span className="text-3xl">👋</span>
+      <div className="flex h-full flex-col items-center justify-center gap-2 text-center select-none py-16">
+        <MessageCircleDashedIcon className="size-8 text-muted-foreground" strokeWidth={1.5} />
         <p className="text-sm text-muted-foreground">
           Tap the mic and start talking.
           <br />
@@ -90,21 +79,29 @@ export function ConversationThread({
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      {messages.map((msg) => (
-        <Bubble key={msg.id} message={msg} />
-      ))}
+    <MessageScrollerProvider>
+      <MessageScroller className="h-full">
+        <MessageScrollerViewport>
+          <MessageScrollerContent
+            aria-busy={transcribing}
+            className="flex flex-col gap-6 px-1 py-2"
+          >
+            {messages.map((msg) => (
+              <ChatMessage key={msg.id} message={msg} />
+            ))}
 
-      {/* STT in-progress indicator */}
-      {transcribing && (
-        <div className="flex gap-3 flex-row-reverse">
-          <div className="max-w-[80%] rounded-2xl rounded-tr-sm bg-primary/20 px-4 py-2.5 text-sm text-primary italic">
-            Listening<TypingDots />
-          </div>
-        </div>
-      )}
-
-      <div ref={bottomRef} />
-    </div>
+            {/* STT in-progress indicator */}
+            {transcribing && (
+              <Marker role="status" className="self-end">
+                <MarkerContent className="shimmer">
+                  Listening…
+                </MarkerContent>
+              </Marker>
+            )}
+          </MessageScrollerContent>
+        </MessageScrollerViewport>
+        <MessageScrollerButton />
+      </MessageScroller>
+    </MessageScrollerProvider>
   );
 }

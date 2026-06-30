@@ -5,7 +5,7 @@ import { ModeToggle, type Mode } from "@/components/ModeToggle";
 import { SettingsBar, type AssistantSettings } from "@/components/SettingsBar";
 import { MicButton, type MicState } from "@/components/MicButton";
 import { VoiceBar } from "@/components/VoiceBar";
-import { ConversationThread, type Message } from "@/components/ConversationThread";
+import { ConversationThread, type MessageData } from "@/components/ConversationThread";
 import { AudioUploadButton } from "@/components/AudioUploadButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -58,7 +58,7 @@ function streamText(
 export default function Home() {
   const [micState, setMicState]     = useState<MicState>("idle");
   const [transcribing, setTranscribing] = useState(false);
-  const [messages, setMessages]     = useState<Message[]>([]);
+  const [messages, setMessages]     = useState<MessageData[]>([]);
   const [mode, setMode]             = useState<Mode>("balanced");
   const [settings, setSettings]     = useState<AssistantSettings>({
     stt:    "whisper-small",
@@ -81,7 +81,7 @@ export default function Home() {
       setMicState("idle");
 
       // Add user message
-      const userMsg: Message = { id: uid(), role: "user", text: pair.user };
+      const userMsg: MessageData = { id: uid(), role: "user", text: pair.user };
       setMessages((prev) => [...prev, userMsg]);
 
       // 2. Fake LLM stream
@@ -142,7 +142,10 @@ export default function Home() {
         {/* ── Header ───────────────────────────────────────────────────────── */}
         <header className="flex items-center justify-between">
           <div className="flex flex-col leading-none">
-            <span className="text-base font-bold tracking-tight">Evie.jl</span>
+            <span className="text-base font-bold tracking-tight">Evie</span>
+            <span className="text-[11px] text-muted-foreground font-medium tracking-wide">
+              offline · Evie.jl
+            </span>
           </div>
           {/* Status dot + theme toggle */}
           <div className="flex items-center gap-3">
@@ -166,7 +169,7 @@ export default function Home() {
         </header>
 
         {/* ── Conversation ─────────────────────────────────────────────────── */}
-        <section className="flex-1 min-h-0 overflow-y-auto -mx-1 px-1">
+        <section className="relative flex-1 min-h-0">
           <ConversationThread messages={messages} transcribing={transcribing} />
         </section>
 

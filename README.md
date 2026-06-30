@@ -1,8 +1,21 @@
-# Evie
+# Evie.jl
+**Extensible Voice Inference Engine**  
 
 [![Build Status](https://github.com/lazarusA/Evie.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/lazarusA/Evie.jl/actions/workflows/CI.yml?query=branch%3Amain)
 
-An offline AI assistant
+`Evie.jl` is a Julia framework for fully local voice inference, combining speech recognition and large language model inference in a composable, streaming pipeline.
+It is designed for offline systems where privacy, extensibility, and performance matter.
+
+## Status
+Experimental / research software.
+
+## Philosophy
+Evie treats voice systems as a composable inference graph, not a fixed application.
+Core principles:
+
+- Edge-first: runs entirely offline
+- Composable: each stage is independently replaceable
+- Extensible: supports custom models and training workflows
 
 ## Download models
 
