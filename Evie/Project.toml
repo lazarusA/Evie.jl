@@ -31,7 +31,7 @@ Whisper = "d1d4ce84-bcd2-406b-9a4f-5ec1fcf2688c"
 
 [sources]
 Llama2 = {rev = "to_use", url = "https://github.com/lazarusA/Llama2.jl"}
-Whisper = {path = "Whisper"}
+Whisper = {path = "../Whisper"}
 
 [compat]
 AbstractFFTs = "1.5.0"
