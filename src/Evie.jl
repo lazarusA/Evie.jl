@@ -7,7 +7,6 @@ using SampledSignals
 using SampledSignals: SampledSignals, Hz, SampleBuf, domain
 using Suppressor: Suppressor
 using DataStructures: CircularBuffer, isfull, empty!, OrderedDict
-include("Whisper/Whisper.jl")
 
 using Llama2: load_gguf_model, sample, sampleObs # https://github.com/lazarusA/Llama2.jl.git
 export load_gguf_model, sample, sampleObs

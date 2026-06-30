@@ -1,64 +1,43 @@
-name = "Evie"
-uuid = "65e27c1f-f1a9-41cd-8b63-580120f62de1"
+name = "Whisper"
+uuid = "d1d4ce84-bcd2-406b-9a4f-5ec1fcf2688c"
 version = "0.1.0"
-authors = ["Lazaro Alonso"]
+authors = ["Lazaro Alonso <lazarus.alon@gmail.com>"]
 
 [deps]
 AbstractFFTs = "621f4979-c628-5d54-868e-fcf4e3e8185c"
 Accessors = "7d9f7c33-5ae7-4f3b-8dc6-eff91059b697"
 Base64 = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
-DSP = "717857b8-e6f2-59f4-9121-6e50c889abd2"
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
-GLFW = "f7f18e0c-5ee9-5ccd-a5bf-e8befd85ed98"
 LibSndFile = "b13ce0c6-77b0-50c6-a2db-140568b8d1a5"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-Llama2 = "7841fa2c-192d-471c-ae30-1f93a4daddfc"
 Lux = "b2108857-7c20-44ae-9111-449ecde12c47"
-Makie = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
 NNlib = "872c559c-99b0-510c-b3b7-b6c96a88d5cd"
 Pickle = "fbb45041-c46e-462f-888f-7c521cafbc2c"
-PortAudio = "80ea8bcb-4634-5cb3-8ee8-a132660d1d2d"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 SampledSignals = "bd7594eb-a658-542f-9e75-4c4d8908c167"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
-Suppressor = "fd094767-a336-5f1f-9728-57cf17d0bbfb"
-Whisper = "d1d4ce84-bcd2-406b-9a4f-5ec1fcf2688c"
-
-[sources]
-Llama2 = {rev = "to_use", url = "https://github.com/lazarusA/Llama2.jl"}
-Whisper = {path = "Whisper"}
 
 [compat]
 AbstractFFTs = "1.5.0"
 Accessors = "0.1.45"
 Base64 = "1.11.0"
-DSP = "0.7.10"
 DataStructures = "0.19.5"
-Distributions = "0.25.128"
+Distributions = "0.25.129"
 Downloads = "1.6, 1.7.0"
 FFTW = "1.10.0"
 FileIO = "1.19.0"
 LibSndFile = "2.4.0"
 LinearAlgebra = "1.11, 1.12.0"
-Llama2 = "0.1.0"
 Lux = "1.31.4"
 NNlib = "0.9.37"
 Pickle = "0.3.7"
-PortAudio = "1.3.0"
 Printf = "1.11.0"
 Random = "1.11.0"
 SampledSignals = "2.1.4"
 Statistics = "1.11.1"
-Suppressor = "0.2.8"
 julia = "1"
-
-[extras]
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-
-[targets]
-test = ["Test"]

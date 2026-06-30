@@ -1,8 +1,3 @@
-using FFTW
-using AbstractFFTs
-using Statistics
-using Printf
-
 export prep_audio, pad_or_trim, log_mel_spectrogram, prep_audio_chunks
 
 const SAMPLE_RATE = 16_000
