@@ -15,6 +15,7 @@ import {
   MessageScroller,
   MessageScrollerButton,
   MessageScrollerContent,
+  MessageScrollerItem,
   MessageScrollerProvider,
   MessageScrollerViewport,
 } from "@/components/ui/message-scroller";
@@ -65,40 +66,42 @@ export function ConversationThread({
   messages,
   transcribing = false,
 }: ConversationThreadProps) {
-  if (messages.length === 0 && !transcribing) {
-    return (
-      <div className="flex h-full flex-col items-center justify-center gap-2 text-center select-none py-16">
-        <MessageCircleDashedIcon className="size-8 text-muted-foreground" strokeWidth={1.5} />
-        <p className="text-sm text-muted-foreground">
-          Tap the mic and start talking.
-          <br />
-          Evie is listening.
-        </p>
-      </div>
-    );
-  }
+  const isEmpty = messages.length === 0 && !transcribing;
 
   return (
     <MessageScrollerProvider>
-      <MessageScroller className="h-full">
-        <MessageScrollerViewport>
-          <MessageScrollerContent
-            aria-busy={transcribing}
-            className="flex flex-col gap-6 px-1 py-2"
-          >
-            {messages.map((msg) => (
-              <ChatMessage key={msg.id} message={msg} />
-            ))}
+      <MessageScroller className="flex h-full flex-col">
+        <MessageScrollerViewport className="flex-1 min-h-0">
+          {isEmpty ? (
+            <div className="flex h-full flex-col items-center justify-center gap-2 text-center select-none py-16">
+              <MessageCircleDashedIcon className="size-8 text-muted-foreground" strokeWidth={1.5} />
+              <p className="text-sm text-muted-foreground">
+                Tap the mic and start talking.
+                <br />
+                Evie is listening.
+              </p>
+            </div>
+          ) : (
+            <MessageScrollerContent
+              aria-busy={transcribing}
+              className="flex flex-col gap-6 px-1 py-2"
+            >
+              {messages.map((msg) => (
+                <MessageScrollerItem key={msg.id} scrollAnchor={msg.role === "user"}>
+                  <ChatMessage message={msg} />
+                </MessageScrollerItem>
+              ))}
 
-            {/* STT in-progress indicator */}
-            {transcribing && (
-              <Marker role="status" className="self-end">
-                <MarkerContent className="shimmer">
-                  Listening…
-                </MarkerContent>
-              </Marker>
-            )}
-          </MessageScrollerContent>
+              {/* STT in-progress indicator */}
+              {transcribing && (
+                <Marker role="status" className="self-end">
+                  <MarkerContent className="shimmer">
+                    Listening…
+                  </MarkerContent>
+                </Marker>
+              )}
+            </MessageScrollerContent>
+          )}
         </MessageScrollerViewport>
         <MessageScrollerButton />
       </MessageScroller>

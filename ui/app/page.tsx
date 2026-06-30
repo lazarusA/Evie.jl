@@ -142,10 +142,7 @@ export default function Home() {
         {/* ── Header ───────────────────────────────────────────────────────── */}
         <header className="flex items-center justify-between">
           <div className="flex flex-col leading-none">
-            <span className="text-base font-bold tracking-tight">Evie</span>
-            <span className="text-[11px] text-muted-foreground font-medium tracking-wide">
-              offline · Evie.jl
-            </span>
+            <span className="text-base font-bold tracking-tight">Evie.jl</span>
           </div>
           {/* Status dot + theme toggle */}
           <div className="flex items-center gap-3">
@@ -169,7 +166,7 @@ export default function Home() {
         </header>
 
         {/* ── Conversation ─────────────────────────────────────────────────── */}
-        <section className="relative flex-1 min-h-0">
+        <section className="relative flex-1 min-h-0 flex flex-col">
           <ConversationThread messages={messages} transcribing={transcribing} />
         </section>
 
@@ -177,13 +174,13 @@ export default function Home() {
         <div className="flex flex-col gap-3 border-t border-border pt-4">
 
           {/* Mic + waveform + upload row */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center gap-3">
             <MicButton state={micState} onToggle={handleMicToggle} />
-            <div className="flex-1">
+            <div className="flex-1 max-w-xs">
               {micState === "listening" ? (
                 <VoiceBar active />
               ) : (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground text-center">
                   {messages.length === 0
                     ? "Tap the mic to speak"
                     : "Tap to ask something else"}
@@ -197,7 +194,7 @@ export default function Home() {
           </div>
 
           {/* Mode + Settings */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-2">
             <ModeToggle value={mode} onChange={setMode} />
             <div className="h-4 w-px bg-border" aria-hidden="true" />
             <SettingsBar
