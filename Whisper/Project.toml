@@ -1,0 +1,4 @@
+name = "Whisper"
+uuid = "d1d4ce84-bcd2-406b-9a4f-5ec1fcf2688c"
+version = "0.1.0"
+authors = ["Lazaro Alonso <lazarus.alon@gmail.com>"]
