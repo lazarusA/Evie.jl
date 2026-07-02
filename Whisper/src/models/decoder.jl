@@ -1,6 +1,6 @@
 export WhisperDecoder
 
-struct WhisperDecoder{T, P, L, N} <: Lux.AbstractLuxLayer
+struct WhisperDecoder{T, P, L, N} <: LuxCore.AbstractLuxContainerLayer{(:token_embedding, :position_embedding, :layers, :norm)}
     token_embedding::T
     position_embedding::P
     layers::L
@@ -11,28 +11,10 @@ function WhisperDecoder(; n_vocab, d_model, n_layers, n_heads, max_positions)
     return WhisperDecoder(
         TokenEmbedding(n_vocab, d_model),
         PositionEmbedding(max_positions, d_model; dim = 2),
-        SequentialWithContext(
+        TransformerStack(
             [TransformerBlock(d_model, n_heads; cross_attention = true) for _ in 1:n_layers]
         ),
         LayerNorm((d_model,); dims = 1)
-    )
-end
-
-function Lux.initialparameters(rng::AbstractRNG, m::WhisperDecoder)
-    return (
-        token_embedding = Lux.initialparameters(rng, m.token_embedding),
-        position_embedding = Lux.initialparameters(rng, m.position_embedding),
-        layers = Lux.initialparameters(rng, m.layers),
-        norm = Lux.initialparameters(rng, m.norm),
-    )
-end
-
-function Lux.initialstates(rng::AbstractRNG, m::WhisperDecoder)
-    return (
-        token_embedding = Lux.initialstates(rng, m.token_embedding),
-        position_embedding = Lux.initialstates(rng, m.position_embedding),
-        layers = Lux.initialstates(rng, m.layers),
-        norm = Lux.initialstates(rng, m.norm),
     )
 end
 

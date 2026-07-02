@@ -10,3 +10,10 @@ Manifest.toml
 *.svg
 package-lock.json
 favicon.ico
+EvieCore
+Llama
+*.pt
+*.ogg
+*.oga
+*.mp4
+TransformerBlock.jl

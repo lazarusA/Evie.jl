@@ -51,10 +51,29 @@ function Lux.initialstates(rng::AbstractRNG, m::GroupedQueryAttention)
     )
 end
 
-# x: (dim, seq_len, batch). cache mutated in place. start_pos is 1-based.
-function (m::GroupedQueryAttention)(
-        x, cache::KVCache, start_pos::Int, cosf, sinf, ps, st
-    )
+function repeat_kv(x::AbstractArray{T, 4}, n_rep::Int) where {T}
+    n_rep == 1 && return x
+    head_dim, n_kv, seq_len, batch = size(x)
+    x = reshape(x, head_dim, 1, n_kv, seq_len, batch)
+    x = repeat(x, 1, n_rep, 1, 1, 1)
+    return reshape(x, head_dim, n_rep * n_kv, seq_len, batch)
+end
+
+# Causal mask for a prefill chunk attending over a KV cache that may already
+# hold `kv_len - seq_len` past tokens. Shape (kv_len, q_len), true = attend —
+# matches NNlib.dot_product_attention's expected mask orientation directly,
+# rather than building it via tril/triu and risking a transpose.
+function causal_mask_offset(seq_len::Int, kv_len::Int)
+    offset = kv_len - seq_len
+    mask = falses(kv_len, seq_len)
+    for q in 1:seq_len, k in 1:kv_len
+        mask[k, q] = k <= offset + q
+    end
+    return mask
+end
+
+# x: (dim, seq_len, batch). cache is mutated in place. start_pos is 1-based.
+function (m::GroupedQueryAttention)(x, cache::KVCache, start_pos::Int, cosf, sinf, ps, st)
     dim, seq_len, batch = size(x)
     n_rep = m.n_heads ÷ m.n_kv_heads
 
@@ -97,22 +116,4 @@ function (m::GroupedQueryAttention)(
 
     out, st_o = m.wo(y, ps.wo, st.wo)
     return out, (wq = st_q, wk = st_k, wv = st_v, wo = st_o)
-end
-
-function repeat_kv(x::AbstractArray{T, 4}, n_rep::Int) where {T}
-    n_rep == 1 && return x
-    head_dim, n_kv, seq_len, batch = size(x)
-    x = reshape(x, head_dim, 1, n_kv, seq_len, batch)
-    x = repeat(x, 1, n_rep, 1, 1, 1)
-    return reshape(x, head_dim, n_rep * n_kv, seq_len, batch)
-end
-
-# causal mask for a prefill chunk attending over a kv cache that may already hold `kv_len - seq_len` past tokens
-function causal_mask_offset(seq_len::Int, kv_len::Int)
-    offset = kv_len - seq_len
-    mask = falses(kv_len, seq_len)
-    for q in 1:seq_len, k in 1:kv_len
-        mask[k, q] = k <= offset + q
-    end
-    return mask
 end

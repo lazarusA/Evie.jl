@@ -10,7 +10,8 @@ using FFTW: FFTW
 using FileIO: FileIO
 using LibSndFile: LibSndFile
 using LinearAlgebra: triu
-using Lux: Lux, Chain, Conv, Dense, LayerNorm, NoOpLayer
+using Lux: Lux, Chain, Conv, Dense, Embedding, LayerNorm, NoOpLayer
+using LuxCore: LuxCore
 using NNlib: NNlib, dot_product_attention, gelu, softmax, ⊠
 using Pickle: Pickle
 using Printf: Printf, @sprintf
@@ -18,6 +19,7 @@ using Random: Random, AbstractRNG
 using SampledSignals: SampledSignals, SampleBuf, SampleBufSink, SampleBufSource, nchannels, nframes, samplerate
 using Statistics: Statistics
 
+include("./models/stack.jl")
 include("./models/attention.jl")
 include("./models/transformer.jl")
 include("./models/embeddings.jl")
