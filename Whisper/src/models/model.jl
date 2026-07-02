@@ -1,4 +1,4 @@
-struct WhisperModel{E, D} <: Lux.AbstractLuxLayer
+struct WhisperModel{E, D} <: LuxCore.AbstractLuxContainerLayer{(:encoder, :decoder)}
     encoder::E
     decoder::D
 end
@@ -20,20 +20,6 @@ function WhisperModel(;
         max_positions = max_positions_dec
     )
     return WhisperModel(encoder, decoder)
-end
-
-function Lux.initialparameters(rng::AbstractRNG, m::WhisperModel)
-    return (
-        encoder = Lux.initialparameters(rng, m.encoder),
-        decoder = Lux.initialparameters(rng, m.decoder),
-    )
-end
-
-function Lux.initialstates(rng::AbstractRNG, m::WhisperModel)
-    return (
-        encoder = Lux.initialstates(rng, m.encoder),
-        decoder = Lux.initialstates(rng, m.decoder),
-    )
 end
 
 function (m::WhisperModel)(mel, tokens, ps, st)

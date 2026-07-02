@@ -10,3 +10,8 @@ Manifest.toml
 *.svg
 package-lock.json
 favicon.ico
+*.pt
+*.ogg
+*.oga
+*.mp4
+.CondaPkg

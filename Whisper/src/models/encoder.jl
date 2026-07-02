@@ -1,6 +1,6 @@
 export WhisperEncoder
 
-struct WhisperEncoder{C, L, N, P} <: Lux.AbstractLuxLayer
+struct WhisperEncoder{C, L, N, P} <: LuxCore.AbstractLuxContainerLayer{(:frontend, :layers, :norm, :position)}
     frontend::C
     layers::L
     norm::N
@@ -13,28 +13,11 @@ function WhisperEncoder(; n_mels, d_model, n_layers, n_heads, max_positions)
             Conv((3,), n_mels => d_model, gelu; pad = 1, cross_correlation = true),
             Conv((3,), d_model => d_model, gelu; pad = 1, stride = 2, cross_correlation = true)
         ),
-        SequentialWithContext(
+        TransformerStack(
             [TransformerBlock(d_model, n_heads) for _ in 1:n_layers]
         ),
         LayerNorm((d_model,); dims = 1),
         PositionEmbedding(max_positions, d_model; dim = 2)
-    )
-end
-function Lux.initialparameters(rng::AbstractRNG, m::WhisperEncoder)
-    return (
-        frontend = Lux.initialparameters(rng, m.frontend),
-        layers = Lux.initialparameters(rng, m.layers),
-        norm = Lux.initialparameters(rng, m.norm),
-        position = Lux.initialparameters(rng, m.position),
-    )
-end
-
-function Lux.initialstates(rng::AbstractRNG, m::WhisperEncoder)
-    return (
-        frontend = Lux.initialstates(rng, m.frontend),
-        layers = Lux.initialstates(rng, m.layers),
-        norm = Lux.initialstates(rng, m.norm),
-        position = Lux.initialstates(rng, m.position),
     )
 end
 

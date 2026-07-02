@@ -1,6 +1,6 @@
 export TokenEmbedding, PositionEmbedding
 
-struct TokenEmbedding{E} <: Lux.AbstractLuxLayer
+struct TokenEmbedding{E} <: LuxCore.AbstractLuxContainerLayer{(:embedding,)}
     embedding::E
     function TokenEmbedding{E}(embedding::E) where {E}
         return new{E}(embedding)
@@ -8,16 +8,8 @@ struct TokenEmbedding{E} <: Lux.AbstractLuxLayer
 end
 
 function TokenEmbedding(n_vocab::Integer, d_model::Integer)
-    emb = Lux.Embedding(n_vocab => d_model)
+    emb = Embedding(n_vocab => d_model)
     return TokenEmbedding{typeof(emb)}(emb)
-end
-
-function Lux.initialparameters(rng::AbstractRNG, m::TokenEmbedding)
-    return (embedding = Lux.initialparameters(rng, m.embedding),)
-end
-
-function Lux.initialstates(rng::AbstractRNG, m::TokenEmbedding)
-    return (embedding = Lux.initialstates(rng, m.embedding),)
 end
 
 function (m::TokenEmbedding)(x, ps, st)
@@ -25,7 +17,7 @@ function (m::TokenEmbedding)(x, ps, st)
     return emb, (embedding = st_emb,)
 end
 
-struct PositionEmbedding{E} <: Lux.AbstractLuxLayer
+struct PositionEmbedding{E} <: LuxCore.AbstractLuxContainerLayer{(:embedding,)}
     embedding::E
     dim::Int
     function PositionEmbedding{E}(embedding::E, dim::Int) where {E}
@@ -34,16 +26,8 @@ struct PositionEmbedding{E} <: Lux.AbstractLuxLayer
 end
 
 function PositionEmbedding(n_positions::Integer, d_model::Integer; dim::Int = 1)
-    emb = Lux.Embedding(n_positions => d_model)
+    emb = Embedding(n_positions => d_model)
     return PositionEmbedding{typeof(emb)}(emb, dim)
-end
-
-function Lux.initialparameters(rng::AbstractRNG, m::PositionEmbedding)
-    return (embedding = Lux.initialparameters(rng, m.embedding),)
-end
-
-function Lux.initialstates(rng::AbstractRNG, m::PositionEmbedding)
-    return (embedding = Lux.initialstates(rng, m.embedding),)
 end
 
 function (m::PositionEmbedding)(x, ps, st)
